@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { DashboardLayout } from '../../../components/layout/DashboardLayout.jsx';
 import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { ErrorState } from '../../../components/ui/ErrorState.jsx';
+import { StatCard } from '../../../components/ui/StatCard.jsx';
 import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
 import { errorMessageKey } from '../../../lib/errorMessage.js';
@@ -37,22 +38,10 @@ export default function AdminOverviewPage() {
       {status === 'ready' && overview && (
         <>
           <div className="stat-grid">
-            <div className="glass stat-card">
-              <p className="stat-card__value">{overview.totals.students}</p>
-              <p className="stat-card__label">{t('admin.overview.students')}</p>
-            </div>
-            <div className="glass stat-card">
-              <p className="stat-card__value">{overview.totals.teachers}</p>
-              <p className="stat-card__label">{t('admin.overview.teachers')}</p>
-            </div>
-            <div className="glass stat-card">
-              <p className="stat-card__value">{overview.totals.quizzes}</p>
-              <p className="stat-card__label">{t('admin.overview.quizzes')}</p>
-            </div>
-            <div className="glass stat-card">
-              <p className="stat-card__value">{overview.totals.classes}</p>
-              <p className="stat-card__label">{t('admin.overview.classes')}</p>
-            </div>
+            <StatCard value={overview.totals.students} label={t('admin.overview.students')} />
+            <StatCard value={overview.totals.teachers} label={t('admin.overview.teachers')} />
+            <StatCard value={overview.totals.quizzes} label={t('admin.overview.quizzes')} />
+            <StatCard value={overview.totals.classes} label={t('admin.overview.classes')} />
           </div>
 
           <div className="glass editor-panel">
@@ -87,9 +76,7 @@ export default function AdminOverviewPage() {
                     <td>{quiz.title}</td>
                     <td>{quiz.teacherName}</td>
                     <td>
-                      {quiz.status === 'published'
-                        ? t('admin.overview.statusPublished')
-                        : t('admin.overview.statusDraft')}
+                      {t(quiz.status === 'published' ? 'quizStatus.published' : 'quizStatus.draft')}
                     </td>
                     <td>{formatDateTime(quiz.createdAt, language)}</td>
                   </tr>

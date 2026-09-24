@@ -81,9 +81,7 @@ export default function TeacherDashboardPage() {
                   </td>
                   <td>{quiz.questionCount}</td>
                   <td>
-                    {quiz.status === 'published'
-                      ? t('teacher.dashboard.statusPublished')
-                      : t('teacher.dashboard.statusDraft')}
+                    {t(quiz.status === 'published' ? 'quizStatus.published' : 'quizStatus.draft')}
                   </td>
                   <td>{formatDateTime(quiz.opensAt, language)}</td>
                   <td>{formatDateTime(quiz.closesAt, language)}</td>

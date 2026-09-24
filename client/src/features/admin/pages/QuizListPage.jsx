@@ -32,7 +32,7 @@ export default function AdminQuizListPage() {
   useEffect(load, []);
 
   return (
-    <DashboardLayout title={t('admin.quizList.title')}>
+    <DashboardLayout title={t('results.title')}>
       <p className="intro-card__note">{t('admin.quizList.subtitle')}</p>
 
       {status === 'loading' && <LoadingState />}
@@ -61,9 +61,7 @@ export default function AdminQuizListPage() {
                   <td>{quiz.title}</td>
                   <td>{quiz.teacherName}</td>
                   <td>
-                    {quiz.status === 'published'
-                      ? t('admin.overview.statusPublished')
-                      : t('admin.overview.statusDraft')}
+                    {t(quiz.status === 'published' ? 'quizStatus.published' : 'quizStatus.draft')}
                   </td>
                 </tr>
               ))}

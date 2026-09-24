@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { LoadingState } from '../ui/LoadingState.jsx';
 import { ErrorState } from '../ui/ErrorState.jsx';
 import { EmptyState } from '../ui/EmptyState.jsx';
-import { Dialog } from '../ui/Dialog.jsx';
+import { ConfirmDialog } from '../ui/ConfirmDialog.jsx';
 import { Button } from '../ui/Button.jsx';
 import { api } from '../../api/client.js';
 import { useT } from '../../i18n/useT.js';
 import { errorMessageKey } from '../../lib/errorMessage.js';
 import { formatCountdown } from '../../lib/time.js';
+import { attemptStatusKey } from '../../lib/attemptStatus.js';
 
 // Shared by the teacher Results screen and the admin Results screen (one table + per-
 // question correct-rate view for both). Admin gets an extra Reset column/dialog via
@@ -116,7 +117,7 @@ export function ResultsView({ quizId, canReset = false }) {
                 <tr key={student.studentId}>
                   <td>{student.studentName}</td>
                   <td>{student.className}</td>
-                  <td>{t(`results.status${statusKey(student.status)}`)}</td>
+                  <td>{t(`attemptStatus.${attemptStatusKey(student.status)}`)}</td>
                   <td>{student.score !== null ? `${student.score} / ${student.maxScore}` : '—'}</td>
                   <td>
                     {student.timeTakenSeconds !== null
@@ -155,15 +156,19 @@ export function ResultsView({ quizId, canReset = false }) {
         </ul>
       </div>
 
-      <Dialog
+      <ConfirmDialog
         open={Boolean(resetTarget)}
         onClose={() => setResetTarget(null)}
         titleId="reset-attempt-title"
+        title={t('results.resetDialogTitle')}
+        body={t('results.resetDialogBody')}
+        error={resetErrorKey && t(resetErrorKey)}
+        confirmLabel={t('results.resetConfirm')}
+        confirmVariant="danger"
+        confirmDisabled={!resetReason.trim()}
+        busy={resetting}
+        onConfirm={confirmReset}
       >
-        <h2 id="reset-attempt-title" className="dialog__title">
-          {t('results.resetDialogTitle')}
-        </h2>
-        <p className="dialog__body">{t('results.resetDialogBody')}</p>
         <label className="field">
           <span className="field__label">{t('results.resetReasonLabel')}</span>
           <textarea
@@ -173,24 +178,7 @@ export function ResultsView({ quizId, canReset = false }) {
             onChange={(event) => setResetReason(event.target.value)}
           />
         </label>
-        {resetErrorKey && (
-          <p className="form-error" role="alert">
-            {t(resetErrorKey)}
-          </p>
-        )}
-        <div className="dialog__actions">
-          <Button variant="secondary" onClick={() => setResetTarget(null)} disabled={resetting}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="danger"
-            onClick={confirmReset}
-            disabled={resetting || !resetReason.trim()}
-          >
-            {t('results.resetConfirm')}
-          </Button>
-        </div>
-      </Dialog>
+      </ConfirmDialog>
     </div>
   );
 }
@@ -203,11 +191,4 @@ function buildClassOptions(students) {
     }
   }
   return [...byId.values()].sort((a, b) => a.className.localeCompare(b.className));
-}
-
-function statusKey(status) {
-  return status
-    .split('_')
-    .map((part) => part[0].toUpperCase() + part.slice(1))
-    .join('');
 }

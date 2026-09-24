@@ -56,7 +56,7 @@ export function CreateQuizDialog({ open, onClose, onCreated }) {
 
         <div className="form-grid">
           <label className="field">
-            <span className="field__label">{t('teacher.createDialog.titleLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.titleLabel')}</span>
             <input
               className="field__input"
               value={form.title}
@@ -66,19 +66,19 @@ export function CreateQuizDialog({ open, onClose, onCreated }) {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.createDialog.languageLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.languageLabel')}</span>
             <select
               className="field__input"
               value={form.language}
               onChange={(event) => update('language', event.target.value)}
             >
-              <option value="ar">{t('teacher.createDialog.languageAr')}</option>
-              <option value="en">{t('teacher.createDialog.languageEn')}</option>
+              <option value="ar">{t('teacher.quizFields.languageAr')}</option>
+              <option value="en">{t('teacher.quizFields.languageEn')}</option>
             </select>
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.editor.timeLimitLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.timeLimitLabel')}</span>
             <input
               type="number"
               min="1"
@@ -90,7 +90,7 @@ export function CreateQuizDialog({ open, onClose, onCreated }) {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.createDialog.opensAtLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.opensAtLabel')}</span>
             <input
               type="datetime-local"
               className="field__input"
@@ -101,7 +101,7 @@ export function CreateQuizDialog({ open, onClose, onCreated }) {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.createDialog.closesAtLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.closesAtLabel')}</span>
             <input
               type="datetime-local"
               className="field__input"

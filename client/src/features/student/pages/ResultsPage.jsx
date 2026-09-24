@@ -110,9 +110,7 @@ export default function ResultsPage() {
                         <span
                           className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
                         >
-                          {t(
-                            `student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`,
-                          )}
+                          {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
                         </span>
                       </td>
                       <td>
@@ -151,7 +149,7 @@ export default function ResultsPage() {
                       <span
                         className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
                       >
-                        {t(`student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`)}
+                        {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
                       </span>
                     </div>
                     <Button

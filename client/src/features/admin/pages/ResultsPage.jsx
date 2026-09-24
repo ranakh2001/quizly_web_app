@@ -13,7 +13,7 @@ export default function AdminResultsPage() {
     <DashboardLayout title={t('results.title')}>
       <div className="editor-toolbar">
         <Button variant="secondary" onClick={() => navigate('/admin/quizzes')}>
-          {t('admin.quizList.title')}
+          {t('results.title')}
         </Button>
       </div>
       <ResultsView quizId={quizId} canReset />

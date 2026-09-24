@@ -71,7 +71,7 @@ export default function ResultPage() {
         </div>
         <div className="result-header__meta">
           <span className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}>
-            {t(`student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`)}
+            {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
           </span>
           <span className="result-header__date">
             {t('student.result.submittedAt', {

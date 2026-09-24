@@ -4,8 +4,9 @@ import { DashboardLayout } from '../../../components/layout/DashboardLayout.jsx'
 import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { ErrorState } from '../../../components/ui/ErrorState.jsx';
 import { EmptyState } from '../../../components/ui/EmptyState.jsx';
-import { Dialog } from '../../../components/ui/Dialog.jsx';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
+import { Callout } from '../../../components/ui/Callout.jsx';
 import { QuestionFormDialog } from '../components/QuestionFormDialog.jsx';
 import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
@@ -190,15 +191,11 @@ export default function QuizEditorPage() {
       <div className="glass editor-panel">
         <h2 className="editor-panel__title">{t('teacher.editor.settingsTitle')}</h2>
 
-        {quiz.locked && (
-          <p className="intro-card__note intro-card__note--warning">
-            {t('teacher.editor.lockedNotice')}
-          </p>
-        )}
+        {quiz.locked && <Callout icon="🔒">{t('teacher.editor.lockedNotice')}</Callout>}
 
         <form className="form-grid" onSubmit={handleSave}>
           <label className="field">
-            <span className="field__label">{t('teacher.editor.titleLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.titleLabel')}</span>
             <input
               className="field__input"
               value={form.title}
@@ -208,20 +205,20 @@ export default function QuizEditorPage() {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.editor.languageLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.languageLabel')}</span>
             <select
               className="field__input"
               value={form.language}
               disabled={quiz.locked}
               onChange={(event) => updateForm('language', event.target.value)}
             >
-              <option value="ar">{t('teacher.createDialog.languageAr')}</option>
-              <option value="en">{t('teacher.createDialog.languageEn')}</option>
+              <option value="ar">{t('teacher.quizFields.languageAr')}</option>
+              <option value="en">{t('teacher.quizFields.languageEn')}</option>
             </select>
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.editor.timeLimitLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.timeLimitLabel')}</span>
             <input
               type="number"
               min="1"
@@ -234,7 +231,7 @@ export default function QuizEditorPage() {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.editor.opensAtLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.opensAtLabel')}</span>
             <input
               type="datetime-local"
               className="field__input"
@@ -246,7 +243,7 @@ export default function QuizEditorPage() {
           </label>
 
           <label className="field">
-            <span className="field__label">{t('teacher.editor.closesAtLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.closesAtLabel')}</span>
             <input
               type="datetime-local"
               className="field__input"
@@ -263,12 +260,12 @@ export default function QuizEditorPage() {
               disabled={quiz.locked}
               onChange={(event) => updateForm('negativeMarking', event.target.checked)}
             />
-            <span className="field__label">{t('teacher.editor.negativeMarkingLabel')}</span>
+            <span className="field__label">{t('teacher.quizFields.negativeMarkingLabel')}</span>
           </label>
 
           {form.negativeMarking && (
             <label className="field">
-              <span className="field__label">{t('teacher.editor.penaltyRatioLabel')}</span>
+              <span className="field__label">{t('teacher.quizFields.penaltyRatioLabel')}</span>
               <input
                 type="number"
                 min="0"
@@ -283,7 +280,7 @@ export default function QuizEditorPage() {
           )}
 
           <fieldset className="field" disabled={quiz.locked}>
-            <legend className="field__label">{t('teacher.editor.classesLabel')}</legend>
+            <legend className="field__label">{t('teacher.quizFields.classesLabel')}</legend>
             <div className="checkbox-list">
               {classes.map((classOption) => (
                 <label key={classOption.id} className="field--checkbox">
@@ -387,52 +384,29 @@ export default function QuizEditorPage() {
         onSaved={handleQuestionSaved}
       />
 
-      <Dialog
+      <ConfirmDialog
         open={publishConfirmOpen}
         onClose={() => setPublishConfirmOpen(false)}
         titleId="publish-confirm-title"
-      >
-        <h2 id="publish-confirm-title" className="dialog__title">
-          {t('teacher.editor.publishConfirmTitle')}
-        </h2>
-        <p className="dialog__body">{t('teacher.editor.publishConfirmBody')}</p>
-        <div className="dialog__actions">
-          <Button
-            variant="secondary"
-            onClick={() => setPublishConfirmOpen(false)}
-            disabled={publishing}
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={handlePublish} disabled={publishing}>
-            {t('teacher.editor.publishConfirm')}
-          </Button>
-        </div>
-      </Dialog>
+        title={t('teacher.editor.publishConfirmTitle')}
+        body={t('teacher.editor.publishConfirmBody')}
+        confirmLabel={t('teacher.editor.publishConfirm')}
+        busy={publishing}
+        onConfirm={handlePublish}
+      />
 
-      <Dialog
+      <ConfirmDialog
         open={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
         titleId="delete-question-title"
-      >
-        <h2 id="delete-question-title" className="dialog__title">
-          {t('teacher.editor.deleteConfirmTitle')}
-        </h2>
-        <p className="dialog__body">{t('teacher.editor.deleteConfirmBody')}</p>
-        {deleteErrorKey && (
-          <p className="form-error" role="alert">
-            {t(deleteErrorKey)}
-          </p>
-        )}
-        <div className="dialog__actions">
-          <Button variant="secondary" onClick={() => setDeleteTarget(null)} disabled={deleting}>
-            {t('common.cancel')}
-          </Button>
-          <Button variant="danger" onClick={confirmDelete} disabled={deleting}>
-            {t('teacher.editor.deleteConfirm')}
-          </Button>
-        </div>
-      </Dialog>
+        title={t('teacher.editor.deleteConfirmTitle')}
+        body={t('teacher.editor.deleteConfirmBody')}
+        error={deleteErrorKey && t(deleteErrorKey)}
+        confirmLabel={t('teacher.editor.deleteConfirm')}
+        confirmVariant="danger"
+        busy={deleting}
+        onConfirm={confirmDelete}
+      />
     </DashboardLayout>
   );
 }

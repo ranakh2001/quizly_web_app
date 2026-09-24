@@ -23,6 +23,19 @@ export default {
     badRequest: 'That request could not be processed.',
     tooManyAttempts: 'Too many attempts. Please wait a moment and try again.',
   },
+  // An attempt's status - shared by the student Home/Results screens and the teacher/admin
+  // Results screen (ResultsView), since it's the same underlying enum everywhere.
+  attemptStatus: {
+    notStarted: 'Not started',
+    inProgress: 'In progress',
+    submitted: 'Submitted',
+    autoSubmitted: 'Auto-submitted',
+  },
+  // A quiz's status - shared by the teacher Dashboard/editor and the admin Overview.
+  quizStatus: {
+    draft: 'Draft',
+    published: 'Published',
+  },
   nav: {
     home: 'Home',
     quizzes: 'Quizzes',
@@ -64,10 +77,6 @@ export default {
       closes: 'Closes {time}',
       timeLimit: '{minutes} min',
       negativeMarkingBadge: 'Negative marking',
-      statusNotStarted: 'Not started',
-      statusInProgress: 'In progress',
-      statusSubmitted: 'Submitted',
-      statusAutoSubmitted: 'Auto-submitted',
       notOpenYetBadge: 'Not open yet',
       scoreLabel: 'Score:',
     },
@@ -188,10 +197,6 @@ export default {
     columnStatus: 'Status',
     columnScore: 'Score',
     columnTime: 'Time taken',
-    statusNotStarted: 'Not started',
-    statusInProgress: 'In progress',
-    statusSubmitted: 'Submitted',
-    statusAutoSubmitted: 'Auto-submitted',
     correctRateTitle: 'Per-question correct rate',
     empty: 'No students in this class.',
     errorLoading: 'Could not load results.',
@@ -208,8 +213,6 @@ export default {
       createButton: 'Create quiz',
       empty: "You haven't created any quizzes yet.",
       errorLoading: 'Could not load your quizzes.',
-      statusDraft: 'Draft',
-      statusPublished: 'Published',
       lockedBadge: 'Locked',
       questionCount: '{count} questions',
       columnTitle: 'Title',
@@ -218,34 +221,32 @@ export default {
       columnOpens: 'Opens',
       columnCloses: 'Closes',
     },
-    createDialog: {
-      title: 'Create a new quiz',
+    // Shared by the create-quiz dialog and the editor's settings form - both edit the same
+    // quiz fields, just in two different places.
+    quizFields: {
       titleLabel: 'Title',
       languageLabel: 'Language',
       languageAr: 'Arabic',
       languageEn: 'English',
-      opensAtLabel: 'Opens at',
-      closesAtLabel: 'Closes at',
-      create: 'Create',
-      errorGeneric: 'Could not create the quiz.',
-    },
-    editor: {
-      back: 'My Quizzes',
-      settingsTitle: 'Settings',
-      titleLabel: 'Title',
-      languageLabel: 'Language',
       timeLimitLabel: 'Time limit (minutes)',
       opensAtLabel: 'Opens at',
       closesAtLabel: 'Closes at',
       negativeMarkingLabel: 'Negative marking',
       penaltyRatioLabel: 'Penalty ratio (0-1)',
       classesLabel: 'Assigned classes',
+    },
+    createDialog: {
+      title: 'Create a new quiz',
+      create: 'Create',
+      errorGeneric: 'Could not create the quiz.',
+    },
+    editor: {
+      back: 'My Quizzes',
+      settingsTitle: 'Settings',
       saveButton: 'Save settings',
       savedNotice: 'Settings saved.',
       lockedNotice:
         'This quiz is locked because students have already started it. Only the title and closing time (extend only) can still change.',
-      statusDraft: 'Draft',
-      statusPublished: 'Published',
       publishButton: 'Publish',
       publishConfirmTitle: 'Publish this quiz?',
       publishConfirmBody:
@@ -297,8 +298,6 @@ export default {
       columnTeacher: 'Teacher',
       columnStatus: 'Status',
       columnCreated: 'Created',
-      statusDraft: 'Draft',
-      statusPublished: 'Published',
       errorLoading: 'Could not load the overview.',
     },
     import: {
@@ -318,8 +317,9 @@ export default {
       selectFileFirst: 'Choose a .csv or .xlsx file first.',
       errorGeneric: 'Could not import this file.',
     },
+    // title reuses results.title ("Results") - this page is just the quiz picker in front of
+    // the same Results screen the teacher uses.
     quizList: {
-      title: 'Results',
       subtitle: 'Choose a quiz to view its results.',
       empty: 'No quizzes yet.',
       errorLoading: 'Could not load quizzes.',

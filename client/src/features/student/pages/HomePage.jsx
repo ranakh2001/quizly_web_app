@@ -10,6 +10,7 @@ import { useT } from '../../../i18n/useT.js';
 import { useAuth } from '../../../features/auth/AuthContext.jsx';
 import { errorMessageKey } from '../../../lib/errorMessage.js';
 import { formatDateTime } from '../../../lib/time.js';
+import { attemptStatusKey } from '../../../lib/attemptStatus.js';
 
 const TABS = ['available', 'upcoming', 'completed'];
 
@@ -141,12 +142,12 @@ export default function HomePage() {
                         </bdi>
                       </>
                     ) : (
-                      t(`student.home.status${statusKey(quiz.attemptStatus)}`)
+                      t(`attemptStatus.${attemptStatusKey(quiz.attemptStatus)}`)
                     )}
                   </p>
                 )}
                 {tab === 'available' && quiz.attemptStatus === 'in_progress' && (
-                  <p className="quiz-card__status">{t('student.home.statusInProgress')}</p>
+                  <p className="quiz-card__status">{t('attemptStatus.inProgress')}</p>
                 )}
               </button>
             </li>
@@ -155,11 +156,4 @@ export default function HomePage() {
       )}
     </MobileLayout>
   );
-}
-
-function statusKey(attemptStatus) {
-  return attemptStatus
-    .split('_')
-    .map((part) => part[0].toUpperCase() + part.slice(1))
-    .join('');
 }

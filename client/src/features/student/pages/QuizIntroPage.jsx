@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MobileLayout } from '../../../components/layout/MobileLayout.jsx';
 import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { ErrorState } from '../../../components/ui/ErrorState.jsx';
-import { Dialog } from '../../../components/ui/Dialog.jsx';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
 import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
@@ -138,24 +138,16 @@ export default function QuizIntroPage() {
         </div>
       </div>
 
-      <Dialog
+      <ConfirmDialog
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         titleId="start-confirm-title"
-      >
-        <h2 id="start-confirm-title" className="dialog__title">
-          {t('student.intro.startConfirmTitle')}
-        </h2>
-        <p className="dialog__body">{t('student.intro.startConfirmBody')}</p>
-        <div className="dialog__actions">
-          <Button variant="secondary" onClick={() => setConfirmOpen(false)} disabled={starting}>
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={handleStart} disabled={starting}>
-            {t('student.intro.confirmStart')}
-          </Button>
-        </div>
-      </Dialog>
+        title={t('student.intro.startConfirmTitle')}
+        body={t('student.intro.startConfirmBody')}
+        confirmLabel={t('student.intro.confirmStart')}
+        busy={starting}
+        onConfirm={handleStart}
+      />
     </MobileLayout>
   );
 }

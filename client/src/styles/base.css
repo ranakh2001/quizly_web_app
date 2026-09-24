@@ -133,10 +133,12 @@ a {
   }
 }
 
-/* Small stat tile: one number + its label - Home and Results summary rows. */
+/* Small stat tile: one number + its label - student Home/Results summary rows and the admin
+   Overview totals row (3 or 4 cards depending on the screen, so auto-fit rather than a fixed
+   column count). */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-3);
 }
 
@@ -1510,31 +1512,6 @@ fieldset.field {
 
 .data-table__row-link:hover {
   background: rgba(255, 255, 255, 0.06);
-}
-
-/* ---- Admin overview stat cards ---------------------------------------------------------------- */
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-3);
-}
-
-.stat-card {
-  padding: var(--space-4);
-  text-align: center;
-}
-
-.stat-card__value {
-  margin: 0;
-  font-size: var(--font-size-2xl);
-  font-weight: 800;
-}
-
-.stat-card__label {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
 }
 
 /* ---- Correct-rate list (results view, overview average-by-class) --------------------------- */
