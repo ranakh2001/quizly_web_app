@@ -4,6 +4,11 @@ Guide for any AI agent (or human) working on Quizly. Read REQUIREMENTS.md and PL
 they are the source of truth for scope and business rules. This file is about _how_ to write
 the code, not _what_ to build.
 
+**Note on those two files' names**: despite the names, REQUIREMENTS.md holds the Phase 0
+scaffolding brief and PLAN.MD holds the actual business rules, data model, screens and phase
+list. Read both fully regardless - the swap doesn't change their content, just don't rely on
+the filenames alone to know which one has what.
+
 ## Project shape
 
 - npm workspaces monorepo: `server` (Express 5, ESM) and `client` (Vite + React).
@@ -12,6 +17,12 @@ the code, not _what_ to build.
   no Express/DB dependency (scoring, deadlines) lives in `server/src/domain/`. SQL lives only
   in `*.repository.js` files, always parameterised.
 - Client: function components + hooks only, no class components, no clever abstractions.
+  Before adding a component, an i18n key, or a date/time formatter, check whether one already
+  covers it - `components/ui/` (ConfirmDialog, StatCard, Callout, EmptyState/ErrorState, ...)
+  and `components/results/ResultsView.jsx` are shared across features specifically to avoid
+  three screens each growing their own copy of the same confirm dialog or stat tile. Likewise
+  `lib/time.js` is the only place that formats a date, and `lib/attemptStatus.js` /
+  `lib/errorMessage.js` are the only places that map a server enum/error code to display text.
 
 ## Naming and structure
 
@@ -48,8 +59,27 @@ the code, not _what_ to build.
 
 - Vitest + supertest, a fresh in-memory (or temp) database per test file via
   `server/tests/helpers/createTestApp.js`.
-- Every business rule from REQUIREMENTS.md gets a test, and the test name reads like the rule
+- Every business rule from PLAN.MD gets a test, and the test name reads like the rule
   (e.g. "rejects a second attempt for the same student and quiz").
+- The client has no automated test suite (not required by PLAN.MD); UI changes are verified
+  by running the dev server and checking the actual screens.
+
+## Hardening patterns already in place
+
+- **Idempotency** (start an attempt, submit): the route handler is synchronous end-to-end (no
+  `await` between the "does this already exist" read and the write), so a single Node process
+  can't interleave two requests mid-check; the DB's UNIQUE constraint is the second line of
+  defence for anything running against the same file from another process. Don't add an
+  `async`/`await` in that path without re-checking this still holds.
+- **Session expiry**: `requireAuth` throws the same `unauthorized()` for a missing, tampered,
+  or expired token (jwt.verify's own error covers all three). Client-side, `api/client.js`
+  calls a registered handler on any 401 that isn't from `/auth/login` or `/auth/me`, which
+  `AuthContext` uses to clear the signed-in user - that's what makes a session dying mid-quiz
+  bounce the student to `/login` instead of leaving them stuck on a dead screen.
+- **Untrusted uploads** (imports): `spreadsheet.js` wraps both parsers in try/catch and turns
+  any failure into a `badRequest`, and `app.js`'s `express.json({ limit: '5mb' })` plus
+  `errorHandler`'s explicit `entity.too.large` branch keep an oversized request from crashing
+  the process or falling through as a bare 500.
 
 ## Working in phases
 

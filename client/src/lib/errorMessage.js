@@ -11,6 +11,7 @@ const DEFAULT_KEYS_BY_CODE = {
   VALIDATION_ERROR: 'errors.validation',
   BAD_REQUEST: 'errors.badRequest',
   TOO_MANY_ATTEMPTS: 'errors.tooManyAttempts',
+  PAYLOAD_TOO_LARGE: 'errors.payloadTooLarge',
 };
 
 // Maps an error to a stable i18n KEY (never a translated string) so callers can store it in

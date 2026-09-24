@@ -22,6 +22,7 @@ export default {
     validation: "Some of the information provided isn't valid.",
     badRequest: 'That request could not be processed.',
     tooManyAttempts: 'Too many attempts. Please wait a moment and try again.',
+    payloadTooLarge: 'That file is too large.',
   },
   // An attempt's status - shared by the student Home/Results screens and the teacher/admin
   // Results screen (ResultsView), since it's the same underlying enum everywhere.

@@ -136,6 +136,48 @@ describe('POST /api/admin/imports/students', () => {
     expect(row.name).toBe('Xlsx Student');
   });
 
+  it('rejects a file whose name has neither a .csv nor .xlsx extension', async () => {
+    const { app, db } = createTestApp();
+    const { admin } = setUp(db);
+    const agent = await adminAgent(app, admin);
+
+    const response = await agent.post('/api/admin/imports/students').send({
+      filename: 'students.txt',
+      contentBase64: toBase64('name,student_code,class,password\n'),
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('rejects a corrupt .xlsx file with a clean 400 instead of crashing', async () => {
+    const { app, db } = createTestApp();
+    const { admin } = setUp(db);
+    const agent = await adminAgent(app, admin);
+
+    const response = await agent.post('/api/admin/imports/students').send({
+      filename: 'students.xlsx',
+      contentBase64: toBase64('this is not a real xlsx workbook, just garbage bytes'),
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('BAD_REQUEST');
+  });
+
+  it('rejects an upload past the body size limit with a clean 413 instead of crashing', async () => {
+    const { app, db } = createTestApp();
+    const { admin } = setUp(db);
+    const agent = await adminAgent(app, admin);
+    // Comfortably over the 5mb express.json() limit set in app.js.
+    const hugeContent = 'a'.repeat(6 * 1024 * 1024);
+
+    const response = await agent
+      .post('/api/admin/imports/students')
+      .send({ filename: 'students.csv', contentBase64: toBase64(hugeContent) });
+
+    expect(response.status).toBe(413);
+    expect(response.body.error.code).toBe('PAYLOAD_TOO_LARGE');
+  });
+
   it('rejects a non-admin role', async () => {
     const { app, db } = createTestApp();
     const { teacher } = setUp(db);

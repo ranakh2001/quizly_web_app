@@ -20,6 +20,7 @@ export default {
     validation: 'بعض المعلومات المُدخلة غير صالحة.',
     badRequest: 'تعذّرت معالجة هذا الطلب.',
     tooManyAttempts: 'محاولات كثيرة جدًا. الرجاء الانتظار لحظة ثم المحاولة مرة أخرى.',
+    payloadTooLarge: 'هذا الملف كبير جدًا.',
   },
   attemptStatus: {
     notStarted: 'لم يبدأ',

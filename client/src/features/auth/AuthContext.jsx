@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { api } from '../../api/client.js';
+import { api, setUnauthorizedHandler } from '../../api/client.js';
 
 const AuthContext = createContext(null);
 
@@ -16,6 +16,14 @@ export function AuthProvider({ children }) {
       .then((data) => setUser(data.user))
       .catch(() => setUser(null))
       .finally(() => setStatus('ready'));
+  }, []);
+
+  // Any other call getting a 401 means a session that WAS valid just stopped being (expired,
+  // or the account was reset) - clearing user here lets RequireAuth's existing redirect send
+  // the student/teacher/admin back to /login instead of leaving them stuck on a dead screen.
+  useEffect(() => {
+    setUnauthorizedHandler(() => setUser(null));
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   const login = useCallback(async (credentials) => {

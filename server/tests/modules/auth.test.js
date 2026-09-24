@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import { createTestApp } from '../helpers/createTestApp.js';
 import { createClass, createUser } from '../helpers/factories.js';
+import config from '../../src/config.js';
 
 function setUpUsers(db) {
   const classId = createClass(db, '10A');
@@ -158,6 +160,21 @@ describe('GET /api/auth/me', () => {
       .set('Cookie', 'session=not-a-real-token');
 
     expect(response.status).toBe(401);
+  });
+
+  it('rejects an expired session with the same generic error as no session, so a client mid-quiz gets a clean 401 to react to', async () => {
+    const { app, db } = createTestApp();
+    const { teacher } = setUpUsers(db);
+    const expiredToken = jwt.sign({ sub: teacher.id, role: 'teacher' }, config.jwtSecret, {
+      expiresIn: -10,
+    });
+
+    const response = await request(app)
+      .get('/api/auth/me')
+      .set('Cookie', `session=${expiredToken}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe('UNAUTHORIZED');
   });
 });
 
