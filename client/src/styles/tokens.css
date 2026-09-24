@@ -1,0 +1,77 @@
+/* Every design value used anywhere in the app lives here as a CSS variable.
+   Components reference var(--...) only; no hard-coded colours/sizes elsewhere. */
+:root {
+  /* Canvas gradient */
+  --color-canvas-start: #1e1b4b;
+  --color-canvas-mid: #4c1d95;
+  --color-canvas-end: #0f766e;
+  --gradient-canvas: linear-gradient(
+    135deg,
+    var(--color-canvas-start),
+    var(--color-canvas-mid) 55%,
+    var(--color-canvas-end)
+  );
+
+  /* Accents */
+  --color-primary: #14b8a6;
+  --color-primary-ink: #042f2e;
+  --color-warning: #f59e0b;
+  --color-danger: #f43f5e;
+  --color-destructive: #e11d48;
+  --color-destructive-ink: #ffffff;
+  --color-success: #10b981;
+  --color-info: #a855f7;
+
+  /* Text */
+  --color-text: #f8fafc;
+  --color-text-muted: rgba(248, 250, 252, 0.7);
+  --color-text-on-light: #0f172a;
+
+  /* Glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-blur: blur(24px);
+  --glass-fallback-bg: rgba(30, 27, 75, 0.88);
+
+  /* Answer tiles (solid, no blur) */
+  --tile-bg: #ffffff;
+  --tile-bg-selected: #e0f2fe;
+  --tile-bg-correct: #d1fae5;
+  --tile-bg-wrong: #ffe4e6;
+  --tile-border-selected: var(--color-primary);
+  --tile-border-correct: var(--color-success);
+  --tile-border-wrong: var(--color-danger);
+
+  /* Timer */
+  --color-timer-normal: var(--color-primary);
+  --color-timer-warning: var(--color-warning);
+  --color-timer-critical: var(--color-danger);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Font sizes */
+  --font-family-base: 'Cairo', 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* Focus ring */
+  --focus-ring-color: var(--color-primary);
+  --focus-ring-width: 2px;
+}

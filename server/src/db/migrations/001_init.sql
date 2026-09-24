@@ -1,0 +1,2 @@
+-- Placeholder migration. The full schema (users, classes, quizzes, quiz_class, questions,
+-- options, attempts, answers, audit_log) is added in Phase 1.
