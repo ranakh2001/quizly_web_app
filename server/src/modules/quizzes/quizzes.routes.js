@@ -24,8 +24,7 @@ router.get('/', (req, res) => {
     res.json({ quizzes: quizzesService.listForTeacher(req.db, req.user) });
     return;
   }
-  // Admin listing is added in Phase 5.
-  res.json({ quizzes: [] });
+  res.json({ quizzes: quizzesService.listForAdmin(req.db) });
 });
 
 router.post('/', requireRole('teacher'), validate(createQuizSchema), (req, res) => {

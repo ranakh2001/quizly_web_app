@@ -41,6 +41,13 @@ export function existsForQuiz(db, quizId) {
   return Boolean(db.prepare('SELECT 1 FROM attempts WHERE quiz_id = ? LIMIT 1').get(quizId));
 }
 
+// Admin reset (rule 2): removes the attempt and its answers so the student's next start
+// creates a fresh one. The caller is responsible for writing the audit_log entry.
+export function deleteAttempt(db, attemptId) {
+  db.prepare('DELETE FROM answers WHERE attempt_id = ?').run(attemptId);
+  db.prepare('DELETE FROM attempts WHERE id = ?').run(attemptId);
+}
+
 export function findAnswersByAttempt(db, attemptId) {
   return db
     .prepare('SELECT question_id, option_id FROM answers WHERE attempt_id = ?')

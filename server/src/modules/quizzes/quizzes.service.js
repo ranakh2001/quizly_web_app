@@ -79,6 +79,18 @@ export function listForTeacher(db, teacher) {
   }));
 }
 
+export function listForAdmin(db) {
+  return quizzesRepository.listAllWithTeacherName(db).map((quiz) => ({
+    id: quiz.id,
+    title: quiz.title,
+    language: quiz.language,
+    status: quiz.status,
+    opensAt: quiz.opensAt,
+    closesAt: quiz.closesAt,
+    teacherName: quiz.teacherName,
+  }));
+}
+
 export function createQuiz(db, teacher, input) {
   const classIds = input.classIds ?? [];
   assertClassesExist(db, classIds);

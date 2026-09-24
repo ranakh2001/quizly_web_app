@@ -3,9 +3,9 @@
 A timed online quiz web app for Nour's Tutoring Centre (Amman). Built with an Express +
 better-sqlite3 API and a Vite + React client, in an npm workspaces monorepo.
 
-> This project is being built in phases. This README will grow with each phase; right now it
-> covers the scaffold (Phase 0), the database schema and seed data (Phase 1), and login +
-> session handling (Phase 2). The student/teacher/admin quiz APIs and UI come in later phases.
+> This project is being built in phases. This README will grow with each phase; right now the
+> full server API is done (scaffold, schema/seed, auth, student quiz-taking, teacher quiz
+> management/results, admin imports/overview/reset) - the client UI comes in later phases.
 
 ## Requirements
 
@@ -37,9 +37,17 @@ server/                  Express API (JavaScript, ESM)
       seed.js                  seeds demo data (classes, users, quizzes, attempts)
       seedData/                name pools and question banks used only by seed.js
       reset.js                 deletes the DB, migrates, seeds
-    domain/                 pure business logic (scoring.js, deadline.js) - no Express/DB imports
-    modules/                 one folder per feature (auth, quizzes, attempts, results,
-                              imports, admin), each with routes/service/repository/schemas
+    domain/                 pure business logic (scoring, deadline, quiz availability/
+                              publishing rules) - no Express/DB imports
+    modules/                 one folder per feature, each with routes/service/repository/
+                              schemas (imports/ also has spreadsheet.js, the .csv/.xlsx parser):
+                                auth/       login, session cookie, role middleware
+                                quizzes/    quiz CRUD, questions, publish, locking (teacher);
+                                            browsing (student); listing (admin)
+                                attempts/   start/get/answer/submit, auto-submit-on-read
+                                results/    per-student results, per-question rate, CSV export
+                                imports/    admin bulk import of students/teachers
+                                admin/      overview stats, reset attempt (audit_log)
     shared/                  errors, error handler, validation middleware, logger
   tests/                   Vitest + supertest tests, one fresh DB per test file
 
@@ -76,4 +84,27 @@ Added incrementally per phase; run with `npm test`.
 
 ## Importing spreadsheets
 
-Documented once the import feature exists (Phase 5). Sample files will live in `/samples`.
+Admin-only, via `POST /api/admin/imports/students` and `/teachers`. Both accept `.csv` or
+`.xlsx`, UTF-8, with or without a byte-order mark, Arabic names included. There's no file
+upload UI yet (Phase 9), so for now the file travels as base64 inside the JSON body:
+
+```bash
+curl -X POST http://localhost:3000/api/admin/imports/students \
+  -H "Content-Type: application/json" \
+  --cookie "<your admin session cookie>" \
+  -d "{\"filename\":\"students.csv\",\"contentBase64\":\"$(base64 -w0 samples/students.csv)\"}"
+```
+
+Required columns:
+
+- Students: `name`, `student_code`, `class`, `password` - `class` must match an existing
+  class name exactly (case-insensitive); an unknown class rejects just that row.
+- Teachers: `name`, `username`, `password`.
+
+Rows are upserted (matched by `student_code` / `username`); a missing required column
+rejects the whole file and saves nothing, but one bad row (missing field, unknown class)
+is skipped while the rest of the file still imports. The response reports how many rows
+were created/updated and lists every rejected row with its row number and reason.
+
+Sample files that import cleanly against the seeded demo data live in `/samples`
+(`students.csv`, `students.xlsx`, `teachers.csv`, `teachers.xlsx`).

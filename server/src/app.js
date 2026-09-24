@@ -9,6 +9,7 @@ import { getConnection } from './db/connection.js';
 import authRouter from './modules/auth/auth.routes.js';
 import quizzesRouter from './modules/quizzes/quizzes.routes.js';
 import attemptsRouter from './modules/attempts/attempts.routes.js';
+import adminRouter from './modules/admin/admin.routes.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.join(dirname, '../../client/dist');
@@ -20,7 +21,9 @@ const clientDistPath = path.join(dirname, '../../client/dist');
 export default function createApp(db = getConnection()) {
   const app = express();
 
-  app.use(express.json());
+  // Higher than the default 100kb: imported spreadsheets travel as base64 JSON (see
+  // modules/imports), which inflates a file's size by about a third.
+  app.use(express.json({ limit: '5mb' }));
   app.use(cookieParser());
   app.use((req, res, next) => {
     req.db = db;
@@ -34,6 +37,7 @@ export default function createApp(db = getConnection()) {
   app.use('/api/auth', authRouter);
   app.use('/api/quizzes', quizzesRouter);
   app.use('/api/attempts', attemptsRouter);
+  app.use('/api/admin', adminRouter);
 
   app.use('/api', (req, res, next) => {
     next(notFound('Route not found'));

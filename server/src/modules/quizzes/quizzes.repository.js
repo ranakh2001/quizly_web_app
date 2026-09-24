@@ -78,8 +78,16 @@ export function listForTeacher(db, teacherId) {
     .map(mapQuiz);
 }
 
-export function listAll(db) {
-  return db.prepare('SELECT * FROM quizzes ORDER BY created_at DESC').all().map(mapQuiz);
+// Admin quiz listing needs to show who owns each quiz.
+export function listAllWithTeacherName(db) {
+  const rows = db
+    .prepare(
+      `SELECT q.*, u.name AS teacher_name FROM quizzes q
+       JOIN users u ON u.id = q.teacher_id
+       ORDER BY q.created_at DESC`,
+    )
+    .all();
+  return rows.map((row) => ({ ...mapQuiz(row), teacherName: row.teacher_name }));
 }
 
 export function isClassAssigned(db, quizId, classId) {
