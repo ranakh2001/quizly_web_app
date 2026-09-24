@@ -88,6 +88,44 @@ export function submitAttempt(db, student, attemptId) {
   return buildAttemptView(db, finalized, quiz, questions);
 }
 
+// The student Results page: every finalised attempt the student has, newest first, with
+// enough quiz/teacher context to list without a second round trip per row. Rule 7 applies
+// here too (this is a read), so any attempt still in_progress but past deadline+grace is
+// refreshed to its final status/score first.
+export function listAttemptsForStudent(db, student) {
+  const rows = attemptsRepository.listByStudentWithQuiz(db, student.id);
+
+  return rows
+    .map((row) => refreshRowIfOverdue(db, row))
+    .filter((row) => row.status !== ATTEMPT_STATUS.IN_PROGRESS)
+    .map((row) => ({
+      attemptId: row.id,
+      quizId: row.quizId,
+      quizTitle: row.quizTitle,
+      teacherName: row.teacherName,
+      submittedAt: row.submittedAt,
+      status: row.status,
+      score: row.score,
+      maxScore: row.maxScore,
+    }));
+}
+
+function refreshRowIfOverdue(db, row) {
+  if (row.status !== ATTEMPT_STATUS.IN_PROGRESS) return row;
+
+  const attempt = attemptsRepository.findById(db, row.id);
+  const quiz = quizzesRepository.findById(db, row.quizId);
+  const questions = quizzesRepository.findQuestionsWithOptions(db, row.quizId);
+  const current = finalizeIfOverdue(db, attempt, quiz, questions);
+  return {
+    ...row,
+    status: current.status,
+    score: current.score,
+    maxScore: current.maxScore,
+    submittedAt: current.submittedAt,
+  };
+}
+
 function loadOwnedAttempt(db, student, attemptId) {
   const attempt = attemptsRepository.findById(db, attemptId);
   if (!attempt) throw notFound('Attempt not found');
@@ -164,6 +202,7 @@ function buildAttemptView(db, attempt, quiz, questions) {
       closesAt: quiz.closesAt,
       negativeMarking: quiz.negativeMarking,
       penaltyRatio: quiz.penaltyRatio,
+      teacherName: quizzesRepository.findTeacherNameById(db, quiz.teacherId),
     },
     questions: questions.map((question) => ({
       id: question.id,
@@ -179,7 +218,37 @@ function buildAttemptView(db, attempt, quiz, questions) {
       questionId: question.id,
       optionId: answersByQuestionId.get(question.id) ?? null,
     })),
+    // Counts only, never which questions were correct - safe to show as soon as the score
+    // itself is visible, well before the per-question review unlocks (rule 9).
+    breakdown: scoreVisible ? buildBreakdown(questions, answersByQuestionId, quiz) : null,
     reviewUnlocked,
     serverNow: now,
   };
+}
+
+function buildBreakdown(questions, answersByQuestionId, quiz) {
+  let correctCount = 0;
+  let correctPoints = 0;
+  let wrongCount = 0;
+  let wrongPoints = 0;
+  let unansweredCount = 0;
+
+  for (const question of questions) {
+    const optionId = answersByQuestionId.get(question.id);
+    const option = question.options.find((candidate) => candidate.id === optionId);
+
+    if (!option) {
+      unansweredCount += 1;
+      continue;
+    }
+    if (option.isCorrect) {
+      correctCount += 1;
+      correctPoints += question.points;
+      continue;
+    }
+    wrongCount += 1;
+    wrongPoints += quiz.negativeMarking ? question.points * quiz.penaltyRatio : 0;
+  }
+
+  return { correctCount, correctPoints, wrongCount, wrongPoints, unansweredCount };
 }

@@ -580,6 +580,152 @@ describe('PUT /api/attempts/:attemptId/answers/:questionId', () => {
   });
 });
 
+describe('GET /api/attempts/:attemptId breakdown', () => {
+  it('returns aggregate correct/wrong/unanswered counts as soon as the score is visible, even though the quiz is still open', async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db);
+    const agent = await studentAgent(app, student);
+    const started = await agent.post('/api/attempts').send({ quizId: quiz.id });
+    await agent
+      .put(`/api/attempts/${started.body.attempt.id}/answers/${quiz.questions[0].id}`)
+      .send({ optionId: quiz.questions[0].options[0].id }); // correct, +4
+    await agent
+      .put(`/api/attempts/${started.body.attempt.id}/answers/${quiz.questions[1].id}`)
+      .send({ optionId: quiz.questions[1].options[0].id }); // wrong
+    await agent.post(`/api/attempts/${started.body.attempt.id}/submit`);
+
+    const response = await agent.get(`/api/attempts/${started.body.attempt.id}`);
+
+    expect(response.body.reviewUnlocked).toBe(false);
+    expect(response.body.breakdown).toEqual({
+      correctCount: 1,
+      correctPoints: 4,
+      wrongCount: 1,
+      wrongPoints: 0,
+      unansweredCount: 0,
+    });
+  });
+
+  it('includes the penalty amount in wrongPoints when negative marking is on', async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db, { negativeMarking: true, penaltyRatio: 0.5 });
+    const agent = await studentAgent(app, student);
+    const started = await agent.post('/api/attempts').send({ quizId: quiz.id });
+    await agent
+      .put(`/api/attempts/${started.body.attempt.id}/answers/${quiz.questions[0].id}`)
+      .send({ optionId: quiz.questions[0].options[0].id }); // correct, +4
+    // Q2 left unanswered.
+    await agent.post(`/api/attempts/${started.body.attempt.id}/submit`);
+
+    const response = await agent.get(`/api/attempts/${started.body.attempt.id}`);
+
+    expect(response.body.breakdown).toEqual({
+      correctCount: 1,
+      correctPoints: 4,
+      wrongCount: 0,
+      wrongPoints: 0,
+      unansweredCount: 1,
+    });
+  });
+
+  it('keeps breakdown null while the attempt is still in progress', async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db);
+    const agent = await studentAgent(app, student);
+    const started = await agent.post('/api/attempts').send({ quizId: quiz.id });
+
+    const response = await agent.get(`/api/attempts/${started.body.attempt.id}`);
+
+    expect(response.body.breakdown).toBeNull();
+  });
+
+  it("includes the quiz's teacher name", async () => {
+    const { app, db } = createTestApp();
+    const { student, teacher, quiz } = setUpOpenQuiz(db);
+    const agent = await studentAgent(app, student);
+    const started = await agent.post('/api/attempts').send({ quizId: quiz.id });
+
+    const response = await agent.get(`/api/attempts/${started.body.attempt.id}`);
+
+    expect(response.body.quiz.teacherName).toBe(teacher.name);
+  });
+});
+
+describe('GET /api/attempts (student results list)', () => {
+  it("lists only the student's own finalised attempts, newest first", async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db);
+    const agent = await studentAgent(app, student);
+    const started = await agent.post('/api/attempts').send({ quizId: quiz.id });
+    await agent.post(`/api/attempts/${started.body.attempt.id}/submit`);
+
+    const response = await agent.get('/api/attempts');
+
+    expect(response.status).toBe(200);
+    expect(response.body.attempts).toHaveLength(1);
+    expect(response.body.attempts[0]).toMatchObject({
+      quizId: quiz.id,
+      quizTitle: 'Open Quiz',
+      status: 'submitted',
+    });
+  });
+
+  it('excludes an attempt that is still in progress and not yet overdue', async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db);
+    const agent = await studentAgent(app, student);
+    await agent.post('/api/attempts').send({ quizId: quiz.id });
+
+    const response = await agent.get('/api/attempts');
+
+    expect(response.body.attempts).toHaveLength(0);
+  });
+
+  it('includes an attempt that is overdue but still marked in_progress, auto-submitting it first', async () => {
+    const { app, db } = createTestApp();
+    const { student, quiz } = setUpOpenQuiz(db);
+    const attemptId = createAttempt(db, {
+      quizId: quiz.id,
+      studentId: student.id,
+      startedAt: isoIn(-2 * MINUTE_MS),
+      deadline: isoIn(-MINUTE_MS),
+      status: 'in_progress',
+    });
+    const agent = await studentAgent(app, student);
+
+    const response = await agent.get('/api/attempts');
+
+    expect(response.body.attempts).toHaveLength(1);
+    expect(response.body.attempts[0]).toMatchObject({ attemptId, status: 'auto_submitted' });
+
+    const row = db.prepare('SELECT status FROM attempts WHERE id = ?').get(attemptId);
+    expect(row.status).toBe('auto_submitted');
+  });
+
+  it("does not include another student's attempts", async () => {
+    const { app, db } = createTestApp();
+    const { student, otherStudent, quiz } = setUpOpenQuiz(db);
+    const otherAgent = await studentAgent(app, otherStudent);
+    const started = await otherAgent.post('/api/attempts').send({ quizId: quiz.id });
+    await otherAgent.post(`/api/attempts/${started.body.attempt.id}/submit`);
+
+    const agent = await studentAgent(app, student);
+    const response = await agent.get('/api/attempts');
+
+    expect(response.body.attempts).toHaveLength(0);
+  });
+
+  it('rejects a teacher from listing student attempts', async () => {
+    const { app, db } = createTestApp();
+    const { teacher } = setUpOpenQuiz(db);
+    const agent = await loginAgent(app, { username: teacher.username, password: teacher.password });
+
+    const response = await agent.get('/api/attempts');
+
+    expect(response.status).toBe(403);
+  });
+});
+
 describe('POST /api/attempts/:attemptId/submit', () => {
   it('computes the correct score with no negative marking', async () => {
     const { app, db } = createTestApp();

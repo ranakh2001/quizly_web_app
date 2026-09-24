@@ -13,6 +13,11 @@ const router = Router();
 
 router.use(requireAuth, requireRole('student'));
 
+// The student Results page: every finalised attempt, newest first.
+router.get('/', (req, res) => {
+  res.json({ attempts: attemptsService.listAttemptsForStudent(req.db, req.user) });
+});
+
 // Idempotent: creates a new attempt or returns the existing one for (quizId, student).
 router.post('/', validate(startAttemptSchema), (req, res) => {
   const view = attemptsService.startAttempt(req.db, req.user, req.body.quizId);

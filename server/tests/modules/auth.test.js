@@ -37,7 +37,11 @@ describe('POST /api/auth/login', () => {
       .send({ studentCode: student.studentCode, password: student.password });
 
     expect(response.status).toBe(200);
-    expect(response.body.user).toMatchObject({ role: 'student', studentCode: 's10a01' });
+    expect(response.body.user).toMatchObject({
+      role: 'student',
+      studentCode: 's10a01',
+      className: '10A',
+    });
     expect(response.headers['set-cookie']?.[0]).toMatch(/^session=/);
   });
 

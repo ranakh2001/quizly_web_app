@@ -36,6 +36,27 @@ export function listByStudent(db, studentId) {
   return db.prepare('SELECT * FROM attempts WHERE student_id = ?').all(studentId).map(mapAttempt);
 }
 
+// Every attempt a student has (any status), joined with its quiz title and teacher name -
+// what the student Results page and its refresh-if-overdue check both need in one query.
+export function listByStudentWithQuiz(db, studentId) {
+  const rows = db
+    .prepare(
+      `SELECT a.*, q.title AS quiz_title, t.name AS teacher_name
+       FROM attempts a
+       JOIN quizzes q ON q.id = a.quiz_id
+       JOIN users t ON t.id = q.teacher_id
+       WHERE a.student_id = ?
+       ORDER BY a.started_at DESC`,
+    )
+    .all(studentId);
+
+  return rows.map((row) => ({
+    ...mapAttempt(row),
+    quizTitle: row.quiz_title,
+    teacherName: row.teacher_name,
+  }));
+}
+
 // Whether any student has ever started this quiz - what locks it (rule 11).
 export function existsForQuiz(db, quizId) {
   return Boolean(db.prepare('SELECT 1 FROM attempts WHERE quiz_id = ? LIMIT 1').get(quizId));

@@ -47,5 +47,6 @@ function toPublicUser(user) {
     username: user.username,
     studentCode: user.studentCode,
     classId: user.classId,
+    className: user.className,
   };
 }
