@@ -36,6 +36,11 @@ export function listByStudent(db, studentId) {
   return db.prepare('SELECT * FROM attempts WHERE student_id = ?').all(studentId).map(mapAttempt);
 }
 
+// Whether any student has ever started this quiz - what locks it (rule 11).
+export function existsForQuiz(db, quizId) {
+  return Boolean(db.prepare('SELECT 1 FROM attempts WHERE quiz_id = ? LIMIT 1').get(quizId));
+}
+
 export function findAnswersByAttempt(db, attemptId) {
   return db
     .prepare('SELECT question_id, option_id FROM answers WHERE attempt_id = ?')

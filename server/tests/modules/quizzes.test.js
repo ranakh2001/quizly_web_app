@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import request from 'supertest';
 import { createTestApp } from '../helpers/createTestApp.js';
 import { createClass, createUser, createQuizWithQuestions } from '../helpers/factories.js';
 import { loginAgent } from '../helpers/auth.js';
@@ -96,14 +97,12 @@ describe('GET /api/quizzes', () => {
     expect(response.body.quizzes[0].category).toBe('upcoming');
   });
 
-  it('rejects a non-student role', async () => {
-    const { app, db } = createTestApp();
-    const { teacher } = setUp(db);
-    const agent = await loginAgent(app, { username: teacher.username, password: teacher.password });
+  it('rejects an unauthenticated request', async () => {
+    const { app } = createTestApp();
 
-    const response = await agent.get('/api/quizzes');
+    const response = await request(app).get('/api/quizzes');
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
   });
 });
 

@@ -98,7 +98,9 @@ function loadOwnedAttempt(db, student, attemptId) {
   return { attempt, quiz, questions };
 }
 
-function finalizeIfOverdue(db, attempt, quiz, questions) {
+// Exported so results.service.js can show up-to-date status/score for an in_progress
+// attempt that has gone overdue, without a second copy of the auto-submit rule.
+export function finalizeIfOverdue(db, attempt, quiz, questions) {
   if (attempt.status !== ATTEMPT_STATUS.IN_PROGRESS) return attempt;
 
   const graceDeadlineMs = new Date(attempt.deadline).getTime() + GRACE_SECONDS * 1000;
