@@ -17,6 +17,13 @@ export const QUIZ_STATUS = Object.freeze({
   PUBLISHED: 'published',
 });
 
+// Display-only extension of QUIZ_STATUS: "closed" is never stored, only computed at read
+// time (see domain/quizAvailability.js) for a published quiz whose closes_at has passed.
+export const QUIZ_DISPLAY_STATUS = Object.freeze({
+  ...QUIZ_STATUS,
+  CLOSED: 'closed',
+});
+
 export const ATTEMPT_STATUS = Object.freeze({
   IN_PROGRESS: 'in_progress',
   SUBMITTED: 'submitted',

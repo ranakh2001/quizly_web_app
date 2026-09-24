@@ -1,10 +1,13 @@
 import { notFound, badRequest } from '../../shared/errors.js';
 import * as adminRepository from './admin.repository.js';
 import * as attemptsRepository from '../attempts/attempts.repository.js';
+import { getQuizDisplayStatus } from '../../domain/quizAvailability.js';
 
 const RECENT_QUIZZES_LIMIT = 5;
 
 export function getOverview(db) {
+  const now = new Date().toISOString();
+
   return {
     totals: {
       students: adminRepository.countUsersByRole(db, 'student'),
@@ -22,8 +25,10 @@ export function getOverview(db) {
     recentQuizzes: adminRepository.recentQuizzes(db, RECENT_QUIZZES_LIMIT).map((row) => ({
       id: row.id,
       title: row.title,
-      status: row.status,
+      status: getQuizDisplayStatus({ status: row.status, closesAt: row.closes_at, now }),
       teacherName: row.teacher_name,
+      classNames: row.class_names ? row.class_names.split(', ') : [],
+      submittedCount: row.submitted_count,
       createdAt: row.created_at,
     })),
   };

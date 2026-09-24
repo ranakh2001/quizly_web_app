@@ -67,6 +67,26 @@ describe('GET /api/admin/overview', () => {
     expect(classRow.attemptsCount).toBe(1);
     expect(response.body.recentQuizzes).toHaveLength(1);
     expect(response.body.recentQuizzes[0].teacherName).toBe('Teacher');
+    expect(response.body.recentQuizzes[0].classNames).toEqual(['10A']);
+    expect(response.body.recentQuizzes[0].submittedCount).toBe(1);
+    expect(response.body.recentQuizzes[0].status).toBe('published');
+  });
+
+  it('shows a published quiz whose closing time has passed as closed', async () => {
+    const { app, db } = createTestApp();
+    const { teacher, admin } = setUp(db);
+    createQuizWithQuestions(db, {
+      teacherId: teacher.id,
+      title: 'Closed Quiz',
+      opensAt: isoIn(-2 * HOUR_MS),
+      closesAt: isoIn(-HOUR_MS),
+    });
+    const agent = await adminAgent(app, admin);
+
+    const response = await agent.get('/api/admin/overview');
+
+    const closedQuiz = response.body.recentQuizzes.find((quiz) => quiz.title === 'Closed Quiz');
+    expect(closedQuiz.status).toBe('closed');
   });
 
   it('reports a null average for a class with no finalised attempts', async () => {

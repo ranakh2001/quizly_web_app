@@ -11,6 +11,12 @@ export default {
     cancel: 'Cancel',
     back: 'Back',
     logout: 'Log out',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    role: {
+      teacher: 'Teacher',
+      admin: 'Admin',
+    },
   },
   // Generic per-error-code fallbacks - see lib/errorMessage.js. A screen can still show a
   // more specific, contextual message for a code when one reads better (e.g. auth.*).
@@ -36,6 +42,7 @@ export default {
   quizStatus: {
     draft: 'Draft',
     published: 'Published',
+    closed: 'Closed',
   },
   nav: {
     home: 'Home',
@@ -298,7 +305,11 @@ export default {
       columnTitle: 'Title',
       columnTeacher: 'Teacher',
       columnStatus: 'Status',
+      columnClasses: 'Classes',
+      columnSubmitted: 'Submitted',
       columnCreated: 'Created',
+      noClasses: 'No classes',
+      resultsLink: 'Results',
       errorLoading: 'Could not load the overview.',
     },
     import: {

@@ -11,6 +11,12 @@ export default {
     cancel: 'إلغاء',
     back: 'رجوع',
     logout: 'تسجيل الخروج',
+    openMenu: 'فتح القائمة',
+    closeMenu: 'إغلاق القائمة',
+    role: {
+      teacher: 'معلم',
+      admin: 'مشرف',
+    },
   },
   errors: {
     unauthorized: 'انتهت صلاحية جلستك. الرجاء تسجيل الدخول مرة أخرى.',
@@ -31,6 +37,7 @@ export default {
   quizStatus: {
     draft: 'مسودة',
     published: 'منشور',
+    closed: 'مغلق',
   },
   nav: {
     home: 'الرئيسية',
@@ -289,7 +296,11 @@ export default {
       columnTitle: 'العنوان',
       columnTeacher: 'المعلم',
       columnStatus: 'الحالة',
+      columnClasses: 'الصفوف',
+      columnSubmitted: 'عدد المُسلَّمين',
       columnCreated: 'تاريخ الإنشاء',
+      noClasses: 'لا توجد صفوف',
+      resultsLink: 'النتائج',
       errorLoading: 'تعذّر تحميل النظرة العامة.',
     },
     import: {

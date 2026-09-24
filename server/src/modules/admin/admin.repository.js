@@ -32,7 +32,12 @@ export function averageScoreByClass(db) {
 export function recentQuizzes(db, limit) {
   return db
     .prepare(
-      `SELECT q.id, q.title, q.status, q.created_at, t.name AS teacher_name
+      `SELECT q.id, q.title, q.status, q.closes_at, q.created_at, t.name AS teacher_name,
+              (SELECT GROUP_CONCAT(c.name, ', ')
+                 FROM quiz_class qc JOIN classes c ON c.id = qc.class_id
+                WHERE qc.quiz_id = q.id) AS class_names,
+              (SELECT COUNT(*) FROM attempts a
+                WHERE a.quiz_id = q.id AND a.status IN ('submitted', 'auto_submitted')) AS submitted_count
        FROM quizzes q
        JOIN users t ON t.id = q.teacher_id
        ORDER BY q.created_at DESC

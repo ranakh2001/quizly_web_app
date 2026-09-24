@@ -1,5 +1,7 @@
 // Pure functions for "is this quiz in a state a student can act on", no DB/Express imports.
 
+import { QUIZ_DISPLAY_STATUS } from '../constants.js';
+
 // Rule: a quiz can be started only if published, assigned to the student's class, and
 // opens_at <= now < closes_at.
 export function canStartQuiz({ quiz, isClassAssigned, now }) {
@@ -29,4 +31,17 @@ export function categorizeQuizForStudent({ quiz, attempt, now }) {
 // of when the individual student's attempt was finalised.
 export function isReviewUnlocked({ quiz, now }) {
   return new Date(now).getTime() >= new Date(quiz.closesAt).getTime();
+}
+
+// Rule: a published quiz whose closing time has passed displays as "closed" to staff, even
+// though the stored status column only ever holds draft/published - "closed" is a read-only
+// display state, never written back to the database.
+export function getQuizDisplayStatus({ status, closesAt, now }) {
+  if (
+    status === QUIZ_DISPLAY_STATUS.PUBLISHED &&
+    new Date(now).getTime() >= new Date(closesAt).getTime()
+  ) {
+    return QUIZ_DISPLAY_STATUS.CLOSED;
+  }
+  return status;
 }

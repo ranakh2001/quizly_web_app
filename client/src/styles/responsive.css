@@ -90,32 +90,27 @@
     inline-size: auto;
   }
 
-  /* Dashboard shell (teacher/admin): the collapsed top bar becomes a real vertical sidebar -
-     see the comment on .dashboard-shell in base.css for why this switches at the tablet
-     breakpoint rather than desktop, unlike the rest of the app. */
+  /* Dashboard shell (teacher/admin): the off-canvas drawer becomes a real, always-visible
+     vertical sidebar - see the comment on .dashboard-shell in base.css for why this switches
+     at the tablet breakpoint rather than desktop, unlike the rest of the app. */
   .dashboard-shell {
     flex-direction: row;
   }
 
-  .dashboard-shell__sidebar {
-    flex: none;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    inline-size: 240px;
+  .dashboard-shell__sidebar,
+  [dir='rtl'] .dashboard-shell__sidebar {
+    position: sticky;
+    inset-block-start: 0;
+    inset-inline: auto;
+    z-index: 10;
     block-size: 100vh;
-    gap: var(--space-5);
-    padding: var(--space-5) var(--space-4);
+    max-inline-size: none;
+    transform: none;
   }
 
-  .dashboard-shell__nav {
-    flex-direction: column;
-  }
-
-  .dashboard-shell__footer {
-    flex-direction: column;
-    align-items: stretch;
-    margin-inline-start: 0;
+  .dashboard-shell__backdrop,
+  .dashboard-shell__menu-button {
+    display: none;
   }
 
   .dashboard-shell__content {
