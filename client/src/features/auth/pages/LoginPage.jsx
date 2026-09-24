@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext.jsx';
 import { useT } from '../../../i18n/useT.js';
-import { ApiError } from '../../../api/client.js';
+import { errorMessageKey } from '../../../lib/errorMessage.js';
 import { Button } from '../../../components/ui/Button.jsx';
 
-const ERROR_KEYS = {
+const ERROR_OVERRIDES = {
   UNAUTHORIZED: 'auth.invalidCredentials',
   TOO_MANY_ATTEMPTS: 'auth.tooManyAttempts',
 };
@@ -17,7 +17,10 @@ export default function LoginPage() {
   const [role, setRole] = useState('student');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  // Stores the i18n KEY, not a translated string - t(errorKey) below re-evaluates on every
+  // render, so the message switches language immediately if the user toggles language while
+  // it's on screen, instead of staying frozen in whatever language was active when it was set.
+  const [errorKey, setErrorKey] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   // Already signed in (e.g. navigated back here manually) - go straight to their home.
@@ -25,7 +28,7 @@ export default function LoginPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError(null);
+    setErrorKey(null);
     setSubmitting(true);
     try {
       const credentials =
@@ -35,8 +38,7 @@ export default function LoginPage() {
       const loggedInUser = await login(credentials);
       navigate(`/${loggedInUser.role}`, { replace: true });
     } catch (err) {
-      const key = err instanceof ApiError ? ERROR_KEYS[err.code] : null;
-      setError(t(key ?? 'common.genericError'));
+      setErrorKey(errorMessageKey(err, { overrides: ERROR_OVERRIDES }));
     } finally {
       setSubmitting(false);
     }
@@ -106,9 +108,9 @@ export default function LoginPage() {
             />
           </label>
 
-          {error && (
+          {errorKey && (
             <p className="form-error" role="alert">
-              {error}
+              {t(errorKey)}
             </p>
           )}
 

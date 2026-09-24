@@ -10,6 +10,20 @@ export default {
     back: 'Back',
     logout: 'Log out',
   },
+  // Generic per-error-code fallbacks - see lib/errorMessage.js. A screen can still show a
+  // more specific, contextual message for a code when one reads better (e.g. auth.*).
+  errors: {
+    unauthorized: 'Your session has expired. Please log in again.',
+    forbidden: "You don't have access to that.",
+    notFound: "We couldn't find that.",
+    conflict: "That can't be done right now.",
+    validation: "Some of the information provided isn't valid.",
+    badRequest: 'That request could not be processed.',
+    tooManyAttempts: 'Too many attempts. Please wait a moment and try again.',
+  },
+  nav: {
+    home: 'Home',
+  },
   auth: {
     title: 'Welcome to Quizly',
     subtitle: "Nour's Tutoring Centre",
@@ -78,6 +92,8 @@ export default {
       fiveMinutesLeft: '5 minutes remaining',
       oneMinuteLeft: '1 minute remaining',
       errorLoading: 'Could not load this attempt.',
+      submitError: 'Could not submit your answers. Please try again.',
+      keyboardHint: 'Keyboard: 1-4 or A-D to choose an answer, arrow keys for next / previous.',
     },
     submitSheet: {
       title: 'Submit your answers?',
@@ -94,6 +110,7 @@ export default {
       title: 'Result',
       yourScore: 'Your score',
       outOf: 'out of {maxScore}',
+      scoreRingLabel: 'Score: {score} out of {maxScore}',
       submittedAt: 'Submitted {time}',
       statusAutoSubmitted: 'This attempt was auto-submitted because time ran out.',
       reviewLocked: 'The detailed review unlocks once the quiz closes, {time}.',

@@ -1,0 +1,120 @@
+/*
+ * Responsive overrides on top of the mobile-first base styles in base.css. Breakpoints are
+ * documented once in tokens.css (--breakpoint-tablet, --breakpoint-desktop); every @media
+ * rule that needs the actual pixel value lives in exactly one of the two blocks below (600px
+ * appears once, 1024px appears once), never scattered as ad hoc numbers elsewhere.
+ *
+ * min-width queries stack: a desktop viewport also matches the tablet block below, so the
+ * desktop block only needs to state what's DIFFERENT at >=1024px, not repeat tablet rules.
+ */
+
+/* ==== Tablet and up (>= 600px) ============================================================ */
+@media (min-width: 600px) {
+  /* App shell: swap the phone's back-button bar for a real nav bar. */
+  .app-shell__back,
+  .app-shell__back-spacer {
+    display: none;
+  }
+
+  .app-shell__logo,
+  .app-shell__user-name {
+    display: block;
+  }
+
+  .app-shell__nav {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .app-shell__content {
+    padding: var(--space-6) var(--space-6);
+  }
+
+  /* Tabs read as a compact segmented control instead of three stretched-out buttons. */
+  .tab-bar {
+    max-inline-size: 420px;
+  }
+
+  /* Home: quiz cards in a 2-column grid. */
+  .quiz-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Submit confirmation becomes a centred dialog instead of a bottom sheet once there's
+     enough room that a sheet no longer reads as "reachable with a thumb". */
+  .dialog.dialog--sheet {
+    position: static;
+    max-inline-size: 420px;
+    border-end-end-radius: var(--radius-lg);
+    border-end-start-radius: var(--radius-lg);
+  }
+
+  /* Taking: a keyboard is likely present, so surface the shortcut hints. */
+  .taking-keyboard-hint {
+    display: block;
+  }
+
+  .answer-tile__hint {
+    display: inline-block;
+  }
+}
+
+/* ==== Desktop and up (>= 1024px) ========================================================== */
+@media (min-width: 1024px) {
+  .app-shell__content {
+    padding-inline: var(--space-7);
+  }
+
+  /* Home: one more column. */
+  .quiz-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Quiz intro: quiz info/rules and the negative-marking/one-attempt/Start panel side by
+     side instead of stacked. */
+  .intro-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  /* Taking: question + options in a centred main column, question navigator as a sticky
+     side panel. .taking-side had order: -1 for the phone/tablet stacked layout (navigator
+     above the question) - reset to source order so the grid places it in the second column. */
+  .taking-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 720px) 320px;
+    justify-content: center;
+    gap: var(--space-5);
+    /* align-items stays at its grid default (stretch): .taking-side needs its grid cell to
+       span the full row height (matching the main column) so its sticky positioning has
+       room to work for the whole scroll. .taking-side itself has no background of its own
+       (the visible panel is the nested QuestionNavigator), so the extra stretched space is
+       invisible - no awkward oversized glass panel, unlike a styled card would produce. */
+  }
+
+  .taking-side {
+    order: 0;
+    position: sticky;
+    inset-block-start: calc(var(--header-height) + 72px + var(--space-4));
+  }
+
+  .taking-side .question-nav {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Result: score ring and breakdown side by side. align-items stays at its grid default
+     (stretch) deliberately: the score panel's grid cell needs to span the full row height
+     (matching the taller breakdown column) so the sticky card inside it has room to stay
+     pinned for the whole scroll, not just the height of its own content. */
+  .result-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: var(--space-5);
+  }
+
+  .result-score-card {
+    position: sticky;
+    inset-block-start: calc(var(--header-height) + var(--space-4));
+  }
+}

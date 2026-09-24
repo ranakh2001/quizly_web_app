@@ -74,4 +74,21 @@
   /* Focus ring */
   --focus-ring-color: var(--color-primary);
   --focus-ring-width: 2px;
+
+  /* Layout */
+  --header-height: 64px;
+  --content-max-width: 1200px;
+
+  /*
+   * Responsive breakpoints - the single source of truth. CSS custom properties can't be
+   * used inside @media conditions (not reliably supported across browsers yet), so these
+   * exist as documentation and for any JS that wants to read them via getComputedStyle.
+   * Every @media rule in styles/responsive.css uses these exact literal pixel values -
+   * 600 and 1024 - in exactly one place each, and nowhere else in the codebase.
+   *   phone:   < 600px   (default/base styles everywhere, mobile-first)
+   *   tablet:  600-1023px
+   *   desktop: >= 1024px
+   */
+  --breakpoint-tablet: 600px;
+  --breakpoint-desktop: 1024px;
 }

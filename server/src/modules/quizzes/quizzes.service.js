@@ -61,6 +61,7 @@ export function getQuizDetailForStudent(db, student, quizId) {
     totalPoints: questions.reduce((sum, question) => sum + question.points, 0),
     hasAttempted: Boolean(attempt),
     attemptId: attempt?.id ?? null,
+    attemptStatus: attempt?.status ?? null,
   };
 }
 

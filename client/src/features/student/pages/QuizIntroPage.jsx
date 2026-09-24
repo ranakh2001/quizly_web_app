@@ -5,8 +5,9 @@ import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { ErrorState } from '../../../components/ui/ErrorState.jsx';
 import { Dialog } from '../../../components/ui/Dialog.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
-import { api, ApiError } from '../../../api/client.js';
+import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
+import { errorMessageKey } from '../../../lib/errorMessage.js';
 import { formatDateTime } from '../../../lib/time.js';
 
 export default function QuizIntroPage() {
@@ -17,7 +18,9 @@ export default function QuizIntroPage() {
   const [quiz, setQuiz] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [starting, setStarting] = useState(false);
-  const [startError, setStartError] = useState(null);
+  // i18n keys, not translated strings - see LoginPage.jsx for why that distinction matters.
+  const [loadErrorKey, setLoadErrorKey] = useState(null);
+  const [startErrorKey, setStartErrorKey] = useState(null);
 
   function load() {
     setStatus('loading');
@@ -27,19 +30,22 @@ export default function QuizIntroPage() {
         setQuiz(data.quiz);
         setStatus('ready');
       })
-      .catch(() => setStatus('error'));
+      .catch((error) => {
+        setLoadErrorKey(errorMessageKey(error, { fallback: 'student.intro.errorLoading' }));
+        setStatus('error');
+      });
   }
 
   useEffect(load, [quizId]);
 
   async function handleStart() {
     setStarting(true);
-    setStartError(null);
+    setStartErrorKey(null);
     try {
       const data = await api.post('/attempts', { quizId: Number(quizId) });
       navigate(`/student/attempts/${data.attempt.id}`, { replace: true });
     } catch (error) {
-      setStartError(error instanceof ApiError ? error.message : t('common.genericError'));
+      setStartErrorKey(errorMessageKey(error));
       setStarting(false);
       setConfirmOpen(false);
     }
@@ -56,7 +62,7 @@ export default function QuizIntroPage() {
   if (status === 'error' || !quiz) {
     return (
       <MobileLayout title="" onBack={() => navigate('/student')}>
-        <ErrorState message={t('student.intro.errorLoading')} onRetry={load} />
+        <ErrorState message={t(loadErrorKey)} onRetry={load} />
       </MobileLayout>
     );
   }
@@ -68,58 +74,68 @@ export default function QuizIntroPage() {
 
   return (
     <MobileLayout title={quiz.title} onBack={() => navigate('/student')}>
-      <div className="glass intro-card">
-        <h2 className="intro-card__title">{t('student.intro.rulesTitle')}</h2>
-        <dl className="intro-card__facts">
-          <div>
-            <dt>{t('student.intro.timeLimitLabel')}</dt>
-            <dd>{t('student.intro.timeLimitValue', { minutes: quiz.timeLimitMinutes })}</dd>
-          </div>
-          <div>
-            <dt>{t('student.intro.questionCountLabel')}</dt>
-            <dd>{quiz.questionCount}</dd>
-          </div>
-          <div>
-            <dt>{t('student.intro.totalPointsLabel')}</dt>
-            <dd>{quiz.totalPoints}</dd>
-          </div>
-        </dl>
+      <div className="intro-layout">
+        <div className="glass intro-card">
+          <h2 className="intro-card__title">{t('student.intro.rulesTitle')}</h2>
+          <dl className="intro-card__facts">
+            <div>
+              <dt>{t('student.intro.timeLimitLabel')}</dt>
+              <dd>{t('student.intro.timeLimitValue', { minutes: quiz.timeLimitMinutes })}</dd>
+            </div>
+            <div>
+              <dt>{t('student.intro.questionCountLabel')}</dt>
+              <dd>{quiz.questionCount}</dd>
+            </div>
+            <div>
+              <dt>{t('student.intro.totalPointsLabel')}</dt>
+              <dd>{quiz.totalPoints}</dd>
+            </div>
+          </dl>
+        </div>
 
-        <p className="intro-card__note">
-          {quiz.negativeMarking
-            ? t('student.intro.negativeMarkingOn', { percent: Math.round(quiz.penaltyRatio * 100) })
-            : t('student.intro.negativeMarkingOff')}
-        </p>
+        <div className="glass intro-card">
+          <p className="intro-card__note">
+            {quiz.negativeMarking
+              ? t('student.intro.negativeMarkingOn', {
+                  percent: Math.round(quiz.penaltyRatio * 100),
+                })
+              : t('student.intro.negativeMarkingOff')}
+          </p>
 
-        <p className="intro-card__note intro-card__note--warning">
-          {t('student.intro.oneAttemptWarning')}
-        </p>
-
-        {notOpenYet && (
           <p className="intro-card__note intro-card__note--warning">
-            {t('student.intro.notOpenYet', { time: formatDateTime(quiz.opensAt) })}
+            {t('student.intro.oneAttemptWarning')}
           </p>
-        )}
-        {closed && !quiz.hasAttempted && (
-          <p className="intro-card__note intro-card__note--warning">
-            {t('student.intro.closedMessage', { time: formatDateTime(quiz.closesAt) })}
-          </p>
-        )}
-        {startError && (
-          <p className="form-error" role="alert">
-            {startError}
-          </p>
-        )}
 
-        {quiz.hasAttempted ? (
-          <Button onClick={() => navigate(`/student/attempts/${quiz.attemptId}/result`)}>
-            {t('student.intro.viewResult')}
-          </Button>
-        ) : (
-          <Button disabled={!canStart} onClick={() => setConfirmOpen(true)}>
-            {t('student.intro.startButton')}
-          </Button>
-        )}
+          {notOpenYet && (
+            <p className="intro-card__note intro-card__note--warning">
+              {t('student.intro.notOpenYet', { time: formatDateTime(quiz.opensAt) })}
+            </p>
+          )}
+          {closed && !quiz.hasAttempted && (
+            <p className="intro-card__note intro-card__note--warning">
+              {t('student.intro.closedMessage', { time: formatDateTime(quiz.closesAt) })}
+            </p>
+          )}
+          {startErrorKey && (
+            <p className="form-error" role="alert">
+              {t(startErrorKey)}
+            </p>
+          )}
+
+          {quiz.attemptStatus === 'in_progress' ? (
+            <Button onClick={() => navigate(`/student/attempts/${quiz.attemptId}`)}>
+              {t('student.intro.resumeButton')}
+            </Button>
+          ) : quiz.hasAttempted ? (
+            <Button onClick={() => navigate(`/student/attempts/${quiz.attemptId}/result`)}>
+              {t('student.intro.viewResult')}
+            </Button>
+          ) : (
+            <Button disabled={!canStart} onClick={() => setConfirmOpen(true)}>
+              {t('student.intro.startButton')}
+            </Button>
+          )}
+        </div>
       </div>
 
       <Dialog

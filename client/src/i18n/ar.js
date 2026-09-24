@@ -10,6 +10,18 @@ export default {
     back: 'رجوع',
     logout: 'تسجيل الخروج',
   },
+  errors: {
+    unauthorized: 'انتهت صلاحية جلستك. الرجاء تسجيل الدخول مرة أخرى.',
+    forbidden: 'لا تملك صلاحية الوصول إلى هذا.',
+    notFound: 'تعذّر العثور على ذلك.',
+    conflict: 'لا يمكن تنفيذ ذلك الآن.',
+    validation: 'بعض المعلومات المُدخلة غير صالحة.',
+    badRequest: 'تعذّرت معالجة هذا الطلب.',
+    tooManyAttempts: 'محاولات كثيرة جدًا. الرجاء الانتظار لحظة ثم المحاولة مرة أخرى.',
+  },
+  nav: {
+    home: 'الرئيسية',
+  },
   auth: {
     title: 'مرحبًا بك في كويزلي',
     subtitle: 'مركز نور التعليمي',
@@ -79,6 +91,8 @@ export default {
       fiveMinutesLeft: 'تبقّت 5 دقائق',
       oneMinuteLeft: 'تبقّت دقيقة واحدة',
       errorLoading: 'تعذّر تحميل هذه المحاولة.',
+      submitError: 'تعذّر تسليم إجاباتك. الرجاء المحاولة مرة أخرى.',
+      keyboardHint: 'لوحة المفاتيح: 1-4 أو A-D لاختيار إجابة، وأسهم الاتجاه للتنقل بين الأسئلة.',
     },
     submitSheet: {
       title: 'هل تريد تسليم إجاباتك؟',
@@ -95,6 +109,7 @@ export default {
       title: 'النتيجة',
       yourScore: 'نتيجتك',
       outOf: 'من أصل {maxScore}',
+      scoreRingLabel: 'النتيجة: {score} من أصل {maxScore}',
       submittedAt: 'تم التسليم {time}',
       statusAutoSubmitted: 'تم تسليم هذه المحاولة تلقائيًا بعد انتهاء الوقت.',
       reviewLocked: 'ستتوفر المراجعة التفصيلية بعد إغلاق الاختبار، {time}.',

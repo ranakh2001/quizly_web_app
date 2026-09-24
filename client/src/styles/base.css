@@ -184,34 +184,36 @@ a {
   white-space: nowrap;
 }
 
-/* ---- Mobile shell (student screens) ---------------------------------------------------- */
+/* ---- App shell (student screens) -------------------------------------------------------
+   Mobile-first: base rules here are the phone layout (back button + title + language
+   toggle). Tablet/desktop overrides - showing the logo/nav/user-name, hiding the back
+   button, widening the container - live in styles/responsive.css, not here. */
 
-.mobile-shell {
+.app-shell {
   min-block-size: 100%;
-  max-inline-size: 440px;
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
 }
 
-.mobile-shell__bar {
+.app-shell__bar {
   position: sticky;
   inset-block-start: 0;
   z-index: 10;
+  min-block-size: var(--header-height);
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  padding-inline: var(--space-4);
 }
 
-.mobile-shell__back,
-.mobile-shell__back-spacer {
+.app-shell__back,
+.app-shell__back-spacer {
   inline-size: 2rem;
   block-size: 2rem;
   flex: none;
 }
 
-.mobile-shell__back {
+.app-shell__back {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -223,12 +225,19 @@ a {
   font-size: var(--font-size-lg);
 }
 
-[dir='rtl'] .mobile-shell__back-icon {
+[dir='rtl'] .app-shell__back-icon {
   display: inline-block;
   transform: scaleX(-1);
 }
 
-.mobile-shell__title {
+.app-shell__logo {
+  display: none; /* tablet+ only */
+  font-weight: 800;
+  font-size: var(--font-size-lg);
+  white-space: nowrap;
+}
+
+.app-shell__title {
   flex: 1;
   margin: 0;
   font-size: var(--font-size-lg);
@@ -237,9 +246,44 @@ a {
   white-space: nowrap;
 }
 
-.mobile-shell__content {
+.app-shell__nav {
+  display: none; /* tablet+ only */
+}
+
+.app-shell__nav-link {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  padding-block: var(--space-2);
+}
+
+.app-shell__nav-link--active {
+  color: var(--color-text);
+}
+
+.app-shell__actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-inline-start: auto;
+}
+
+.app-shell__user-name {
+  display: none; /* tablet+ only */
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.app-shell__content {
   flex: 1;
   padding: var(--space-4);
+}
+
+.app-shell__container {
+  max-inline-size: var(--content-max-width);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -275,14 +319,15 @@ a {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr; /* 2 cols at tablet, 3 at desktop - see responsive.css */
   gap: var(--space-3);
 }
 
 .quiz-card {
   display: block;
   inline-size: 100%;
+  block-size: 100%;
   text-align: start;
   padding: var(--space-4);
   border: none;
@@ -329,7 +374,15 @@ a {
   color: var(--color-primary-ink);
 }
 
-/* ---- Quiz intro -------------------------------------------------------------------------- */
+/* ---- Quiz intro --------------------------------------------------------------------------
+   Two glass panels (quiz info/rules, then negative-marking/one-attempt/Start). Stacked
+   here; a 2-column grid at desktop only - see responsive.css. */
+
+.intro-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
 
 .intro-card {
   padding: var(--space-5);
@@ -419,6 +472,39 @@ a {
 
 .dialog__actions .button {
   flex: 1;
+}
+
+/* ---- Taking layout ---------------------------------------------------------------------
+   Stacked here (navigator above the question, as a normal column); a main-column-plus-
+   sticky-side-panel layout at desktop only - see responsive.css. */
+
+.taking-timer-bar {
+  position: sticky;
+  inset-block-start: var(--header-height);
+  z-index: 5;
+  min-block-size: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--space-2);
+}
+
+.taking-keyboard-hint {
+  display: none; /* shown from tablet up, where a physical keyboard is likely - see responsive.css */
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.taking-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.taking-side {
+  order: -1; /* navigator above the question on phone/tablet; reset to source order at desktop */
 }
 
 /* ---- Timer --------------------------------------------------------------------------------- */
@@ -537,6 +623,19 @@ a {
   cursor: not-allowed;
 }
 
+.answer-tile__hint {
+  display: none; /* shown from tablet up, alongside the keyboard hint - see responsive.css */
+  inline-size: 1.5em;
+  block-size: 1.5em;
+  margin-inline-end: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(15, 23, 42, 0.1);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.5em;
+}
+
 .save-status {
   min-block-size: 1.2em;
   margin: 0;
@@ -554,14 +653,22 @@ a {
   flex: 1;
 }
 
-/* ---- Result -------------------------------------------------------------------------------- */
+/* ---- Result -------------------------------------------------------------------------------
+   Score card stacked above the breakdown here; side by side at desktop - see responsive.css. */
+
+.result-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
 
 .result-score-card {
   padding: var(--space-6) var(--space-5);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .result-score-card__label {
@@ -569,22 +676,55 @@ a {
   color: var(--color-text-muted);
 }
 
-.result-score-card__value {
-  margin: 0;
-  font-size: 3rem;
-  font-weight: 800;
-}
-
-.result-score-card__outof {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
-  margin-inline-start: var(--space-2);
-}
-
 .result-score-card__meta {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.score-ring {
+  position: relative;
+  inline-size: 160px;
+  block-size: 160px;
+}
+
+.score-ring__svg {
+  inline-size: 100%;
+  block-size: 100%;
+  transform: rotate(-90deg);
+}
+
+.score-ring__track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 10;
+}
+
+.score-ring__value {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.score-ring__text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-ring__score {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.score-ring__max {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
 }
 
 .result-breakdown__title {

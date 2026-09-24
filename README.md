@@ -54,12 +54,24 @@ server/                  Express API (JavaScript, ESM)
 client/                  Vite + React app
   src/
     api/client.js           the only place that calls fetch()
-    i18n/                    ar/en dictionaries + I18nProvider + useT hook
-    styles/                  design tokens, base styles, glass-surface utility classes
-    components/ui/          reusable presentational components
-    components/layout/      page shells (mobile, dashboard)
-    features/                one folder per area (auth, student, teacher, admin)
-    lib/time.js              date/time formatting (Asia/Amman)
+    i18n/                    ar/en dictionaries + I18nProvider + useT hook (supports
+                              {param} interpolation)
+    styles/
+      tokens.css               design tokens as CSS variables, incl. the two responsive
+                                breakpoints (600px tablet, 1024px desktop) documented once
+      base.css                 reset, component styles, mobile-first (base = phone)
+      glass.css                 .glass / .glass--bar / .glass--sheet utility classes
+      responsive.css            tablet/desktop overrides only, in exactly two @media blocks
+    components/ui/          reusable presentational components (Button, Dialog, ScoreRing,
+                              Loading/Error/EmptyState, ComingSoonPage)
+    components/layout/      page shells (MobileLayout - responsive despite the name: phone
+                              back-button bar up to a full desktop nav bar via CSS only)
+    features/                one folder per area (auth, student, teacher, admin), each with
+                              pages/, components/, hooks/
+    lib/                     time.js (Asia/Amman formatting), errorMessage.js (maps an
+                              ApiError's code to an i18n KEY - never shows the server's raw
+                              message; components store the key and translate at render
+                              time so it re-translates immediately if the UI language changes)
 ```
 
 ## Demo logins

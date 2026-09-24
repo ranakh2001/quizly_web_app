@@ -6,6 +6,7 @@ import { ErrorState } from '../../../components/ui/ErrorState.jsx';
 import { EmptyState } from '../../../components/ui/EmptyState.jsx';
 import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
+import { errorMessageKey } from '../../../lib/errorMessage.js';
 import { formatDateTime } from '../../../lib/time.js';
 
 const TABS = ['available', 'upcoming', 'completed'];
@@ -16,6 +17,8 @@ export default function HomePage() {
   const [status, setStatus] = useState('loading');
   const [quizzes, setQuizzes] = useState([]);
   const [tab, setTab] = useState('available');
+  // i18n key, not a translated string - see LoginPage.jsx for why that distinction matters.
+  const [errorKey, setErrorKey] = useState(null);
 
   function load() {
     setStatus('loading');
@@ -25,7 +28,10 @@ export default function HomePage() {
         setQuizzes(data.quizzes);
         setStatus('ready');
       })
-      .catch(() => setStatus('error'));
+      .catch((error) => {
+        setErrorKey(errorMessageKey(error, { fallback: 'student.home.errorLoading' }));
+        setStatus('error');
+      });
   }
 
   useEffect(load, []);
@@ -58,7 +64,7 @@ export default function HomePage() {
       </div>
 
       {status === 'loading' && <LoadingState />}
-      {status === 'error' && <ErrorState message={t('student.home.errorLoading')} onRetry={load} />}
+      {status === 'error' && <ErrorState message={t(errorKey)} onRetry={load} />}
       {status === 'ready' && visibleQuizzes.length === 0 && (
         <EmptyState message={t(`student.home.empty${tab[0].toUpperCase()}${tab.slice(1)}`)} />
       )}

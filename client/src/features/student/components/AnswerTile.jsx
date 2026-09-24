@@ -1,6 +1,8 @@
 // Solid white answer tile (never glass, per the design system). States: idle / selected /
 // disabled always; correct / wrong only apply once the review has unlocked (ResultPage).
-export function AnswerTile({ text, selected, outcome, disabled, onSelect }) {
+// shortcutHint (e.g. "A") is an optional visual reminder of the keyboard shortcut for this
+// option on the Taking screen; ResultPage's review tiles don't pass one.
+export function AnswerTile({ text, selected, outcome, disabled, onSelect, shortcutHint }) {
   const classes = ['answer-tile'];
   if (selected) classes.push('answer-tile--selected');
   if (outcome === 'correct') classes.push('answer-tile--correct');
@@ -15,6 +17,7 @@ export function AnswerTile({ text, selected, outcome, disabled, onSelect }) {
       disabled={disabled}
       aria-pressed={selected}
     >
+      {shortcutHint && <span className="answer-tile__hint">{shortcutHint}</span>}
       {text}
     </button>
   );
