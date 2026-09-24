@@ -16,18 +16,32 @@
     display: none;
   }
 
-  .app-shell__logo,
-  .app-shell__user-name {
-    display: block;
-  }
-
   .app-shell__nav {
     display: flex;
     gap: var(--space-4);
   }
 
+  /* Nav links replace the page title next to the logo - no duplicated chrome. */
+  .app-shell__title {
+    display: none;
+  }
+
+  .app-shell--detail .app-shell__logo {
+    display: block;
+  }
+
+  .user-menu__info {
+    display: flex;
+  }
+
+  /* The bottom nav is a phone-only affordance; tablet+ has the top nav instead. */
+  .app-shell__bottom-nav {
+    display: none;
+  }
+
   .app-shell__content {
     padding: var(--space-6) var(--space-6);
+    padding-block-end: var(--space-6);
   }
 
   /* Tabs read as a compact segmented control instead of three stretched-out buttons. */
@@ -56,6 +70,60 @@
 
   .answer-tile__hint {
     display: inline-block;
+  }
+
+  /* Results list: a table reads better than stacked cards once there's room for columns. */
+  .results-table-wrapper {
+    display: block;
+  }
+
+  .results-cards {
+    display: none;
+  }
+
+  /* Result actions: content-width buttons side by side instead of stacked full-width. */
+  .result-actions {
+    flex-direction: row;
+  }
+
+  .result-actions .button {
+    inline-size: auto;
+  }
+
+  /* Dashboard shell (teacher/admin): the collapsed top bar becomes a real vertical sidebar -
+     see the comment on .dashboard-shell in base.css for why this switches at the tablet
+     breakpoint rather than desktop, unlike the rest of the app. */
+  .dashboard-shell {
+    flex-direction: row;
+  }
+
+  .dashboard-shell__sidebar {
+    flex: none;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    inline-size: 240px;
+    block-size: 100vh;
+    gap: var(--space-5);
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .dashboard-shell__nav {
+    flex-direction: column;
+  }
+
+  .dashboard-shell__footer {
+    flex-direction: column;
+    align-items: stretch;
+    margin-inline-start: 0;
+  }
+
+  .dashboard-shell__content {
+    padding: var(--space-6);
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

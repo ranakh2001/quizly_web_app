@@ -90,6 +90,11 @@ export function listAllWithTeacherName(db) {
   return rows.map((row) => ({ ...mapQuiz(row), teacherName: row.teacher_name }));
 }
 
+export function findTeacherNameById(db, teacherId) {
+  const row = db.prepare('SELECT name FROM users WHERE id = ?').get(teacherId);
+  return row?.name ?? null;
+}
+
 export function isClassAssigned(db, quizId, classId) {
   if (!classId) return false;
   const row = db
@@ -115,6 +120,11 @@ export function findClassesByIds(db, classIds) {
   if (classIds.length === 0) return [];
   const placeholders = classIds.map(() => '?').join(',');
   return db.prepare(`SELECT id, name FROM classes WHERE id IN (${placeholders})`).all(...classIds);
+}
+
+// Every class - for the teacher quiz editor's class-assignment checkboxes.
+export function listAllClasses(db) {
+  return db.prepare('SELECT id, name FROM classes ORDER BY name').all();
 }
 
 // Published quizzes assigned to a class - what a student is allowed to ever see.

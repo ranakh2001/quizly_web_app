@@ -22,7 +22,10 @@ export function ScoreRing({ score, maxScore, label }) {
       </svg>
       <div className="score-ring__text" aria-hidden="true">
         <span className="score-ring__score">{score}</span>
-        <span className="score-ring__max">/ {maxScore}</span>
+        {/* One isolate around the whole "/ maxScore" fragment - a lone bdi per number
+            still lets the neutral "/" between them flip order in RTL (e.g. "30 /"
+            instead of "/ 30"); isolating the fragment as a unit keeps it as authored. */}
+        <bdi className="score-ring__max">/ {maxScore}</bdi>
       </div>
     </div>
   );

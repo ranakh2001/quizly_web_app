@@ -13,7 +13,7 @@ import { formatDateTime } from '../../../lib/time.js';
 export default function QuizIntroPage() {
   const { quizId } = useParams();
   const navigate = useNavigate();
-  const { t } = useT();
+  const { t, language } = useT();
   const [status, setStatus] = useState('loading');
   const [quiz, setQuiz] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -108,12 +108,12 @@ export default function QuizIntroPage() {
 
           {notOpenYet && (
             <p className="intro-card__note intro-card__note--warning">
-              {t('student.intro.notOpenYet', { time: formatDateTime(quiz.opensAt) })}
+              {t('student.intro.notOpenYet', { time: formatDateTime(quiz.opensAt, language) })}
             </p>
           )}
           {closed && !quiz.hasAttempted && (
             <p className="intro-card__note intro-card__note--warning">
-              {t('student.intro.closedMessage', { time: formatDateTime(quiz.closesAt) })}
+              {t('student.intro.closedMessage', { time: formatDateTime(quiz.closesAt, language) })}
             </p>
           )}
           {startErrorKey && (

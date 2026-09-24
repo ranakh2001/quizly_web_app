@@ -73,7 +73,7 @@ a {
   cursor: not-allowed;
 }
 
-/* Loading / error / empty placeholders - every data screen uses one of these. */
+/* Loading placeholder (detail pages only - list screens use skeleton cards instead). */
 .state-message {
   padding: var(--space-6) var(--space-4);
   text-align: center;
@@ -84,7 +84,103 @@ a {
   gap: var(--space-3);
 }
 
-.state-message--error {
+/* Empty / error placeholder: glass card with an icon, a title, one sentence and an
+   optional action - shared by EmptyState and ErrorState. */
+.state-card {
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.state-card__icon {
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+  margin-block-end: var(--space-1);
+}
+
+.state-card__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.state-card__message {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+}
+
+/* Pulsing placeholder the size of a real quiz/result card, shown while list data loads. */
+.skeleton-card {
+  block-size: 104px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(255, 255, 255, 0.16) 37%,
+    rgba(255, 255, 255, 0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-pulse 1.4s ease infinite;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Small stat tile: one number + its label - Home and Results summary rows. */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.stat-card {
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.stat-card__value {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+}
+
+.stat-card__label {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Teal inline note (e.g. "review unlocks once the quiz closes"). Compound selector (not
+   just .callout) so it wins over glass.css's .glass border shorthand regardless of import
+   order - a plain single-class .callout rule would otherwise have its border reset. */
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.callout.glass {
+  background: rgba(20, 184, 166, 0.14);
+  border: 1px solid rgba(20, 184, 166, 0.4);
+}
+
+.callout__icon {
+  flex: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  line-height: 1.3;
+}
+
+.callout__text {
+  margin: 0;
   color: var(--color-text);
 }
 
@@ -231,10 +327,18 @@ a {
 }
 
 .app-shell__logo {
-  display: none; /* tablet+ only */
   font-weight: 800;
   font-size: var(--font-size-lg);
   white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Detail pages (quiz intro/taking/result) show back + title instead of the logo on phone,
+   to avoid crowding a 375px bar - the logo returns once the nav bar has room, at tablet+
+   (see responsive.css). */
+.app-shell--detail .app-shell__logo {
+  display: none;
 }
 
 .app-shell__title {
@@ -269,16 +373,10 @@ a {
   margin-inline-start: auto;
 }
 
-.app-shell__user-name {
-  display: none; /* tablet+ only */
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  white-space: nowrap;
-}
-
 .app-shell__content {
   flex: 1;
   padding: var(--space-4);
+  padding-block-end: calc(var(--space-4) + 72px); /* room for the fixed bottom nav on phone */
 }
 
 .app-shell__container {
@@ -287,6 +385,109 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+/* ---- Bottom nav (phone only, top-level pages only) -------------------------------------- */
+
+.app-shell__bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 10;
+  display: flex;
+  min-block-size: 64px;
+}
+
+.app-shell__bottom-nav-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.app-shell__bottom-nav-link--active {
+  color: var(--color-primary);
+}
+
+/* ---- Avatar + user menu ------------------------------------------------------------------ */
+
+.avatar {
+  flex: none;
+  inline-size: 2rem;
+  block-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-primary-ink);
+  font-weight: 700;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 0;
+}
+
+.user-menu__info {
+  display: none; /* tablet+ only */
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.user-menu__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.user-menu__class {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.user-menu__panel {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: calc(100% + var(--space-2));
+  min-inline-size: 160px;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  z-index: 20;
+}
+
+.user-menu__item {
+  display: block;
+  inline-size: 100%;
+  text-align: start;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.user-menu__item:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ---- Loading / error / empty and tabs -------------------------------------------------- */
@@ -372,6 +573,21 @@ a {
 .badge--warning {
   background: var(--color-warning);
   color: var(--color-primary-ink);
+}
+
+.badge--success {
+  background: var(--color-success);
+  color: var(--color-primary-ink);
+}
+
+.badge--info {
+  background: var(--color-info);
+  color: var(--color-text);
+}
+
+.badge--neutral {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-muted);
 }
 
 /* ---- Quiz intro --------------------------------------------------------------------------
@@ -757,4 +973,633 @@ a {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+/* ---- Result header (title, teacher, status chip, submitted date) ------------------------ */
+
+.result-header {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.result-header__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.result-header__teacher {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.result-header__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.result-header__date {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.result-score-card__fraction {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+/* The breakdown card and the review-lock note / per-question review stack in one column
+   next to the score panel - see .result-layout grid at desktop in responsive.css. */
+.result-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.breakdown-card {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.breakdown-card__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.breakdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.breakdown-row__note {
+  margin-inline-start: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.breakdown-row__value {
+  font-weight: 700;
+}
+
+.breakdown-row--correct .breakdown-row__value {
+  color: var(--color-success);
+}
+
+.breakdown-row--wrong .breakdown-row__value {
+  color: var(--color-danger);
+}
+
+.breakdown-row--unanswered .breakdown-row__value {
+  color: var(--color-text-muted);
+}
+
+.breakdown-total {
+  display: flex;
+  justify-content: space-between;
+  padding-block-start: var(--space-3);
+  border-block-start: 1px solid var(--glass-border);
+  font-weight: 700;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.result-actions .button {
+  inline-size: 100%;
+}
+
+/* ---- Student Home header (greeting + class/code) ----------------------------------------- */
+
+.home-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.home-header__greeting {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.home-header__meta {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+/* ---- Student Results list ----------------------------------------------------------------- */
+
+.results-table-wrapper {
+  display: none; /* tablet+ only - see responsive.css */
+  overflow-x: auto;
+}
+
+.results-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.results-table th,
+.results-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: start;
+  border-block-end: 1px solid var(--glass-border);
+}
+
+.results-table th {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.results-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.result-row-card {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.result-row-card__title {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+
+.result-row-card__meta {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.result-row-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.result-row-card__score {
+  font-weight: 700;
+}
+
+/* ---- Student Profile ----------------------------------------------------------------------- */
+
+.profile-card {
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.profile-card .avatar {
+  inline-size: 4rem;
+  block-size: 4rem;
+  font-size: var(--font-size-2xl);
+}
+
+.profile-card__name {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.profile-card__meta {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.profile-fields {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.profile-field__label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.profile-field__value {
+  font-weight: 600;
+}
+
+/* ---- Dashboard shell (teacher & admin) ----------------------------------------------------
+   Mobile-first like the rest of the app, but the OTHER way round from the student shell: base
+   rules here collapse the sidebar into a top bar (there's no room for a real side column yet);
+   from tablet up (see responsive.css) it becomes a fixed-width vertical sidebar, per the design
+   brief calling for a desktop sidebar layout for staff screens. */
+
+.dashboard-shell {
+  min-block-size: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-shell__sidebar {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.dashboard-shell__brand {
+  font-weight: 800;
+  font-size: var(--font-size-lg);
+  white-space: nowrap;
+}
+
+.dashboard-shell__nav {
+  display: flex;
+  flex: 1;
+  gap: var(--space-4);
+}
+
+.dashboard-shell__nav-link {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dashboard-shell__nav-link--active {
+  color: var(--color-text);
+}
+
+.dashboard-shell__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-inline-start: auto;
+}
+
+.dashboard-shell__user-name {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.dashboard-shell__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.dashboard-shell__header {
+  min-block-size: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-4);
+}
+
+.dashboard-shell__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.dashboard-shell__content {
+  flex: 1;
+  padding: var(--space-4);
+}
+
+.dashboard-shell__container {
+  max-inline-size: var(--content-max-width);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.dashboard-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- Editor / detail panels (teacher quiz editor, admin import) ---------------------------- */
+
+.editor-toolbar {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.editor-panel {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.editor-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.editor-panel__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.editor-panel__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- Forms: create-quiz dialog, quiz settings, question form ------------------------------- */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.field--checkbox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+fieldset.field {
+  margin: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+/* ---- Publish checklist ----------------------------------------------------------------------- */
+
+.checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checklist__item {
+  position: relative;
+  padding-inline-start: var(--space-5);
+  font-size: var(--font-size-sm);
+}
+
+.checklist__item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.35em;
+  inline-size: 0.9em;
+  block-size: 0.9em;
+  border-radius: var(--radius-full);
+}
+
+.checklist__item--ok {
+  color: var(--color-text);
+}
+
+.checklist__item--ok::before {
+  background: var(--color-success);
+}
+
+.checklist__item--fail {
+  color: var(--color-text-muted);
+}
+
+.checklist__item--fail::before {
+  background: var(--color-danger);
+}
+
+/* ---- Question list (editor) ------------------------------------------------------------------- */
+
+.question-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.question-list__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.question-list__text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.question-list__meta {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.question-list__actions {
+  flex: none;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.option-form-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.option-form-list__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.option-form-list__row .field__input {
+  flex: 1;
+}
+
+/* ---- Data table (teacher quiz list, admin overview/quiz list, results) --------------------- */
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.data-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: start;
+  white-space: nowrap;
+  border-block-end: 1px solid var(--glass-border);
+}
+
+.data-table th {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.data-table td .badge {
+  margin-inline-start: var(--space-2);
+}
+
+.data-table__row-link {
+  cursor: pointer;
+}
+
+.data-table__row-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Admin overview stat cards ---------------------------------------------------------------- */
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.stat-card {
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.stat-card__value {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+}
+
+.stat-card__label {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ---- Correct-rate list (results view, overview average-by-class) --------------------------- */
+
+.correct-rate-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.correct-rate-list__item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.correct-rate-list__value {
+  flex: none;
+  font-weight: 700;
+}
+
+/* ---- Results view toolbar (class filter + CSV export) --------------------------------------- */
+
+.results-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.results-view__toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.results-view__filter {
+  min-inline-size: 180px;
+}
+
+.results-view__section-title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-lg);
+}
+
+/* ---- Admin import ----------------------------------------------------------------------------- */
+
+.import-file-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.import-report {
+  font-size: var(--font-size-sm);
+}
+
+.import-report__rejected {
+  margin: var(--space-2) 0 0;
+  padding-inline-start: var(--space-5);
+  color: var(--color-warning);
 }
