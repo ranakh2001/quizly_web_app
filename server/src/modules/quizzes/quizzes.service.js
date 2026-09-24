@@ -24,6 +24,7 @@ export function listForStudent(db, student) {
       closesAt: quiz.closesAt,
       negativeMarking: quiz.negativeMarking,
       category: categorizeQuizForStudent({ quiz, attempt, now }),
+      attemptId: attempt?.id ?? null,
       attemptStatus: attempt?.status ?? 'not_started',
       score: attempt?.score ?? null,
       maxScore: attempt?.maxScore ?? null,
@@ -59,6 +60,7 @@ export function getQuizDetailForStudent(db, student, quizId) {
     questionCount: questions.length,
     totalPoints: questions.reduce((sum, question) => sum + question.points, 0),
     hasAttempted: Boolean(attempt),
+    attemptId: attempt?.id ?? null,
   };
 }
 

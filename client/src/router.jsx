@@ -4,6 +4,10 @@ import { useAuth } from './features/auth/AuthContext.jsx';
 import { LoadingState } from './components/ui/LoadingState.jsx';
 import { ComingSoonPage } from './components/ui/ComingSoonPage.jsx';
 import LoginPage from './features/auth/pages/LoginPage.jsx';
+import StudentHomePage from './features/student/pages/HomePage.jsx';
+import QuizIntroPage from './features/student/pages/QuizIntroPage.jsx';
+import TakingPage from './features/student/pages/TakingPage.jsx';
+import ResultPage from './features/student/pages/ResultPage.jsx';
 
 // "/" has no role of its own - send the visitor to /login or to their own home once the
 // session check (see AuthContext) has finished.
@@ -18,7 +22,12 @@ export const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
   {
     element: <RequireAuth roles={['student']} />,
-    children: [{ path: '/student', element: <ComingSoonPage title="Student" /> }],
+    children: [
+      { path: '/student', element: <StudentHomePage /> },
+      { path: '/student/quizzes/:quizId', element: <QuizIntroPage /> },
+      { path: '/student/attempts/:attemptId', element: <TakingPage /> },
+      { path: '/student/attempts/:attemptId/result', element: <ResultPage /> },
+    ],
   },
   {
     element: <RequireAuth roles={['teacher']} />,
