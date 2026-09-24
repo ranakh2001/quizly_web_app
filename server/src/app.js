@@ -7,6 +7,8 @@ import errorHandler from './shared/errorHandler.js';
 import { notFound } from './shared/errors.js';
 import { getConnection } from './db/connection.js';
 import authRouter from './modules/auth/auth.routes.js';
+import quizzesRouter from './modules/quizzes/quizzes.routes.js';
+import attemptsRouter from './modules/attempts/attempts.routes.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDistPath = path.join(dirname, '../../client/dist');
@@ -30,6 +32,8 @@ export default function createApp(db = getConnection()) {
   });
 
   app.use('/api/auth', authRouter);
+  app.use('/api/quizzes', quizzesRouter);
+  app.use('/api/attempts', attemptsRouter);
 
   app.use('/api', (req, res, next) => {
     next(notFound('Route not found'));
