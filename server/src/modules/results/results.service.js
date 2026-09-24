@@ -85,6 +85,9 @@ function toStudentResult(row) {
 
   return {
     studentId: row.studentId,
+    // Needed by the admin Results screen's Reset button (POST /admin/attempts/:attemptId/reset);
+    // null for a student who never started, so nothing to reset.
+    attemptId: row.attemptId,
     studentName: row.studentName,
     studentCode: row.studentCode,
     className: row.className,

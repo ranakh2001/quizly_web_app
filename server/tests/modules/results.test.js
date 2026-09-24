@@ -94,6 +94,7 @@ describe('GET /api/quizzes/:quizId/results', () => {
     const notStarted = response.body.students.find((s) => s.studentName === 'Student A2');
     expect(notStarted.status).toBe('not_started');
     expect(notStarted.score).toBeNull();
+    expect(notStarted.attemptId).toBeNull();
   });
 
   it('reports a submitted attempt’s score and time taken', async () => {
@@ -120,6 +121,7 @@ describe('GET /api/quizzes/:quizId/results', () => {
     expect(row.score).toBe(4);
     expect(row.maxScore).toBe(6);
     expect(row.timeTakenSeconds).toBe(10 * 60);
+    expect(row.attemptId).toEqual(expect.any(Number));
   });
 
   it('auto-finalises an overdue in_progress attempt when results are read', async () => {
