@@ -25,3 +25,6 @@ export const ATTEMPT_STATUS = Object.freeze({
 
 export const LOGIN_MAX_FAILURES = 5;
 export const LOGIN_LOCKOUT_MINUTES = 5;
+
+export const SESSION_COOKIE_NAME = 'session';
+export const SESSION_DURATION = '12h';
