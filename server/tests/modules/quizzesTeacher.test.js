@@ -388,6 +388,24 @@ describe('question management', () => {
     expect(response.body.question.options).toHaveLength(4);
   });
 
+  it("rejects adding a question to another teacher's quiz", async () => {
+    const { app, db } = createTestApp();
+    const { teacher, otherTeacher } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: otherTeacher.id,
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+      questions: [],
+    });
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent
+      .post(`/api/quizzes/${quiz.id}/questions`)
+      .send(validQuestionPayload());
+
+    expect(response.status).toBe(403);
+  });
+
   it('rejects a question with fewer than 4 options', async () => {
     const { app, db } = createTestApp();
     const { teacher } = setUp(db);
@@ -513,6 +531,46 @@ describe('question management', () => {
     expect(response.status).toBe(404);
   });
 
+  it("rejects updating a question on another teacher's quiz", async () => {
+    const { app, db } = createTestApp();
+    const { teacher, otherTeacher } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: otherTeacher.id,
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+    });
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent
+      .put(`/api/quizzes/${quiz.id}/questions/${quiz.questions[0].id}`)
+      .send(validQuestionPayload());
+
+    expect(response.status).toBe(403);
+  });
+
+  it('rejects updating a question once the quiz is locked', async () => {
+    const { app, db } = createTestApp();
+    const { teacher, student } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: teacher.id,
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+    });
+    createAttempt(db, {
+      quizId: quiz.id,
+      studentId: student.id,
+      startedAt: isoIn(0),
+      deadline: isoIn(HOUR_MS),
+    });
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent
+      .put(`/api/quizzes/${quiz.id}/questions/${quiz.questions[0].id}`)
+      .send(validQuestionPayload());
+
+    expect(response.status).toBe(409);
+  });
+
   it('deletes a question from an unlocked quiz', async () => {
     const { app, db } = createTestApp();
     const { teacher } = setUp(db);
@@ -530,6 +588,23 @@ describe('question management', () => {
     expect(response.status).toBe(204);
     const row = db.prepare('SELECT * FROM questions WHERE id = ?').get(quiz.questions[0].id);
     expect(row).toBeUndefined();
+  });
+
+  it("rejects deleting a question on another teacher's quiz", async () => {
+    const { app, db } = createTestApp();
+    const { teacher, otherTeacher } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: otherTeacher.id,
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+    });
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent.delete(
+      `/api/quizzes/${quiz.id}/questions/${quiz.questions[0].id}`,
+    );
+
+    expect(response.status).toBe(403);
   });
 
   it('rejects deleting a question once the quiz is locked', async () => {
@@ -610,6 +685,64 @@ describe('POST /api/quizzes/:quizId/publish', () => {
 
     expect(response.status).toBe(422);
     expect(response.body.error.details).toContain('At least one class must be assigned.');
+  });
+
+  it('rejects publishing when a question does not have exactly 4 options', async () => {
+    const { app, db } = createTestApp();
+    const { classA, teacher } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: teacher.id,
+      status: 'draft',
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+      classIds: [classA],
+      questions: [],
+    });
+    // The question-editing API can never persist a question like this (the schema requires
+    // exactly 4 options), so this simulates it directly to prove publish still catches it.
+    const questionId = db
+      .prepare('INSERT INTO questions (quiz_id, text, points, order_index) VALUES (?, ?, ?, 0)')
+      .run(quiz.id, 'Malformed question', 2).lastInsertRowid;
+    const insertOption = db.prepare(
+      'INSERT INTO options (question_id, text, is_correct, order_index) VALUES (?, ?, ?, ?)',
+    );
+    insertOption.run(questionId, 'A', 1, 0);
+    insertOption.run(questionId, 'B', 0, 1);
+    insertOption.run(questionId, 'C', 0, 2);
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent.post(`/api/quizzes/${quiz.id}/publish`);
+
+    expect(response.status).toBe(422);
+    expect(response.body.error.details).toContain('Question 1: must have exactly 4 options.');
+  });
+
+  it('rejects publishing when a question has no correct option', async () => {
+    const { app, db } = createTestApp();
+    const { classA, teacher } = setUp(db);
+    const quiz = createQuizWithQuestions(db, {
+      teacherId: teacher.id,
+      status: 'draft',
+      opensAt: isoIn(-HOUR_MS),
+      closesAt: isoIn(HOUR_MS),
+      classIds: [classA],
+      questions: [],
+    });
+    const questionId = db
+      .prepare('INSERT INTO questions (quiz_id, text, points, order_index) VALUES (?, ?, ?, 0)')
+      .run(quiz.id, 'No correct answer', 2).lastInsertRowid;
+    const insertOption = db.prepare(
+      'INSERT INTO options (question_id, text, is_correct, order_index) VALUES (?, ?, ?, ?)',
+    );
+    ['A', 'B', 'C', 'D'].forEach((text, index) => insertOption.run(questionId, text, 0, index));
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent.post(`/api/quizzes/${quiz.id}/publish`);
+
+    expect(response.status).toBe(422);
+    expect(response.body.error.details).toContain(
+      'Question 1: must have exactly one correct option.',
+    );
   });
 
   it('is idempotent: publishing an already-published quiz just returns it', async () => {

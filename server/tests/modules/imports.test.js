@@ -48,8 +48,9 @@ describe('POST /api/admin/imports/students', () => {
       .send({ filename: 'students.csv', contentBase64: toBase64(csv) });
 
     expect(response.body.report).toMatchObject({ createdCount: 0, updatedCount: 1 });
-    const row = db.prepare("SELECT * FROM users WHERE student_code = 's10a31'").get();
-    expect(row.name).toBe('New Name');
+    const rows = db.prepare("SELECT * FROM users WHERE student_code = 's10a31'").all();
+    expect(rows).toHaveLength(1); // updated in place, not duplicated
+    expect(rows[0].name).toBe('New Name');
   });
 
   it('rejects a row with an unknown class but still imports the valid rows', async () => {
@@ -140,12 +141,10 @@ describe('POST /api/admin/imports/students', () => {
     const { teacher } = setUp(db);
     const agent = await loginAgent(app, { username: teacher.username, password: teacher.password });
 
-    const response = await agent
-      .post('/api/admin/imports/students')
-      .send({
-        filename: 'students.csv',
-        contentBase64: toBase64('name,student_code,class,password\n'),
-      });
+    const response = await agent.post('/api/admin/imports/students').send({
+      filename: 'students.csv',
+      contentBase64: toBase64('name,student_code,class,password\n'),
+    });
 
     expect(response.status).toBe(403);
   });
