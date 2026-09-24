@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { I18nContext } from './I18nProvider.jsx';
 
-// Returns a t(key) function that reads dotted keys ('health.ok') from the active dictionary.
+// Returns a t(key) function that reads dotted keys ('auth.title') from the active dictionary.
 export function useT() {
   const context = useContext(I18nContext);
   if (!context) {

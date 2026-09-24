@@ -63,7 +63,33 @@ a {
   border: 1px solid var(--glass-border);
 }
 
-.home-page {
+.button--danger {
+  background: var(--color-destructive);
+  color: var(--color-destructive-ink);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading / error / empty placeholders - every data screen uses one of these. */
+.state-message {
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.state-message--error {
+  color: var(--color-text);
+}
+
+/* Centred glass-card page: login and the role placeholders. */
+.auth-page {
   min-block-size: 100%;
   display: flex;
   align-items: center;
@@ -71,21 +97,80 @@ a {
   padding: var(--space-5);
 }
 
-.home-page__card {
+.auth-page__card {
   padding: var(--space-6);
-  max-inline-size: 480px;
+  max-inline-size: 420px;
   inline-size: 100%;
 }
 
-.home-page__header {
+.auth-page__top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  justify-content: flex-end;
   margin-block-end: var(--space-4);
 }
 
-.home-page__server-time {
+.auth-page__title {
+  margin-block-end: var(--space-1);
+  font-size: var(--font-size-xl);
+}
+
+.auth-page__subtitle {
+  margin-block-end: var(--space-5);
   color: var(--color-text-muted);
+}
+
+.role-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  padding: var(--space-1);
+  margin-block-end: var(--space-5);
+}
+
+.role-toggle__option {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  padding-block: var(--space-2);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.role-toggle__option--active {
+  background: var(--color-primary);
+  color: var(--color-primary-ink);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field__label {
   font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.field__input {
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text);
+}
+
+.form-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin: 0;
 }
