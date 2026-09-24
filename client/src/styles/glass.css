@@ -1,38 +1,27 @@
-/* Glass surface utility classes. Use only for cards, top bars, dialogs and sheets
-   (never for answer option tiles, which stay solid). */
+/* Flat card surface utility classes. Kept the historical "glass" class names (used across
+   every feature screen) to avoid a repo-wide rename - only what they render has changed,
+   from blurred glassmorphism to plain flat cards: surface colour, border, soft shadow.
+   Use only for cards, top bars, dialogs and sheets (never for answer option tiles, which
+   stay solid). */
 .glass {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-card);
 }
 
+/* Chrome bars (app header, bottom nav, dashboard sidebar) read as a distinct section rather
+   than a floating card - subtle grey fill, no shadow, no radius, only the one border edge
+   the base rule doesn't already strip (see each bar's own layout for which edge that is). */
 .glass--bar {
+  background: var(--color-bg-subtle);
   border-radius: 0;
   border-inline: none;
   border-block-start: none;
+  box-shadow: none;
 }
 
 .glass--sheet {
   border-end-end-radius: 0;
   border-end-start-radius: 0;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass,
-  .glass--bar,
-  .glass--sheet {
-    background: var(--glass-fallback-bg);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass--bar,
-  .glass--sheet {
-    background: var(--glass-fallback-bg);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
 }

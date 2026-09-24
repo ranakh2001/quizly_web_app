@@ -5,6 +5,7 @@ import { LoadingState } from '../../../components/ui/LoadingState.jsx';
 import { ErrorState } from '../../../components/ui/ErrorState.jsx';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog.jsx';
 import { Button } from '../../../components/ui/Button.jsx';
+import { Callout } from '../../../components/ui/Callout.jsx';
 import { api } from '../../../api/client.js';
 import { useT } from '../../../i18n/useT.js';
 import { errorMessageKey } from '../../../lib/errorMessage.js';
@@ -94,13 +95,15 @@ export default function QuizIntroPage() {
         </div>
 
         <div className="glass intro-card">
-          <p className="intro-card__note">
-            {quiz.negativeMarking
-              ? t('student.intro.negativeMarkingOn', {
-                  percent: Math.round(quiz.penaltyRatio * 100),
-                })
-              : t('student.intro.negativeMarkingOff')}
-          </p>
+          {quiz.negativeMarking ? (
+            <Callout icon="⚠" variant="danger">
+              {t('student.intro.negativeMarkingOn', {
+                percent: Math.round(quiz.penaltyRatio * 100),
+              })}
+            </Callout>
+          ) : (
+            <p className="intro-card__note">{t('student.intro.negativeMarkingOff')}</p>
+          )}
 
           <p className="intro-card__note intro-card__note--warning">
             {t('student.intro.oneAttemptWarning')}

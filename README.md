@@ -3,8 +3,8 @@
 A timed online quiz web app for Nour's Tutoring Centre (Amman): students take timed, auto-
 scored quizzes; teachers build quizzes and review results; the admin manages classes/imports
 and can reset a stuck attempt. Built with an Express + better-sqlite3 API and a Vite + React
-client, in an npm workspaces monorepo, dark-glass UI with full Arabic RTL support (and an EN
-toggle).
+client, in an npm workspaces monorepo, a minimal white/black/teal UI with full Arabic RTL
+support (and an EN toggle).
 
 ## Requirements
 
@@ -82,7 +82,9 @@ client/                  Vite + React app
       base.css                 reset, component styles, mobile-first (base = phone) for
                                 student screens; the dashboard shell flips this for
                                 teacher/admin (desktop sidebar, phone top-bar fallback)
-      glass.css                 .glass / .glass--bar / .glass--sheet utility classes
+      glass.css                 .glass / .glass--bar / .glass--sheet - flat card/surface
+                                utility classes (name kept from an earlier glassmorphism
+                                look to avoid renaming call sites across every screen)
       responsive.css            tablet/desktop overrides only, in exactly two @media blocks
     components/ui/          reusable presentational components: Button, Dialog,
                               ConfirmDialog (the shared confirm-dialog shape behind Start/

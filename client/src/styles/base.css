@@ -16,8 +16,7 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
   color: var(--color-text);
-  background: var(--gradient-canvas);
-  background-attachment: fixed;
+  background: var(--color-bg);
 }
 
 img,
@@ -60,12 +59,12 @@ a {
 .button--secondary {
   background: transparent;
   color: var(--color-text);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
 }
 
 .button--danger {
-  background: var(--color-destructive);
-  color: var(--color-destructive-ink);
+  background: var(--color-danger);
+  color: var(--color-danger-ink);
 }
 
 .button:disabled {
@@ -116,9 +115,9 @@ a {
   block-size: 104px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.08) 25%,
-    rgba(255, 255, 255, 0.16) 37%,
-    rgba(255, 255, 255, 0.08) 63%
+    var(--color-bg-subtle) 25%,
+    var(--color-border) 37%,
+    var(--color-bg-subtle) 63%
   );
   background-size: 400% 100%;
   animation: skeleton-pulse 1.4s ease infinite;
@@ -159,9 +158,11 @@ a {
   font-size: var(--font-size-sm);
 }
 
-/* Teal inline note (e.g. "review unlocks once the quiz closes"). Compound selector (not
-   just .callout) so it wins over glass.css's .glass border shorthand regardless of import
-   order - a plain single-class .callout rule would otherwise have its border reset. */
+/* Teal inline note (e.g. "review unlocks once the quiz closes"), or a danger variant for a
+   risk-carrying note (e.g. negative marking) - a neutral card with a danger left border and
+   icon, not a filled red block. Compound selectors (not just .callout) so they win over
+   glass.css's .glass border shorthand regardless of import order - a plain single-class
+   .callout rule would otherwise have its border reset. */
 .callout {
   display: flex;
   align-items: flex-start;
@@ -170,8 +171,8 @@ a {
 }
 
 .callout.glass {
-  background: rgba(20, 184, 166, 0.14);
-  border: 1px solid rgba(20, 184, 166, 0.4);
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-primary);
 }
 
 .callout__icon {
@@ -184,6 +185,16 @@ a {
 .callout__text {
   margin: 0;
   color: var(--color-text);
+}
+
+.callout--danger.glass {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-inline-start: 3px solid var(--color-danger);
+}
+
+.callout--danger .callout__icon {
+  color: var(--color-danger);
 }
 
 /* Centred glass-card page: login and the role placeholders. */
@@ -219,7 +230,7 @@ a {
 
 .role-toggle {
   display: flex;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-bg-subtle);
   border-radius: var(--radius-full);
   padding: var(--space-1);
   margin-block-end: var(--space-5);
@@ -262,8 +273,8 @@ a {
   padding-block: var(--space-2);
   padding-inline: var(--space-3);
   border-radius: var(--radius-md);
-  border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   color: var(--color-text);
 }
 
@@ -489,7 +500,7 @@ a {
 }
 
 .user-menu__item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-subtle);
 }
 
 /* ---- Loading / error / empty and tabs -------------------------------------------------- */
@@ -502,7 +513,7 @@ a {
 .tab-bar__item {
   flex: 1;
   border: none;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-bg-subtle);
   color: var(--color-text-muted);
   padding-block: var(--space-2);
   border-radius: var(--radius-md);
@@ -572,24 +583,24 @@ a {
   white-space: nowrap;
 }
 
+/* Cautionary flag (negative marking, locked) - neutral chip, teal outline instead of a
+   colour fill, so it reads as "notice" without adding a second accent colour. */
 .badge--warning {
-  background: var(--color-warning);
-  color: var(--color-primary-ink);
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+  border: 1px solid var(--color-primary);
 }
 
 .badge--success {
-  background: var(--color-success);
+  background: var(--color-primary);
   color: var(--color-primary-ink);
 }
 
-.badge--info {
-  background: var(--color-info);
-  color: var(--color-text);
-}
-
+.badge--info,
 .badge--neutral {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 
 /* ---- Quiz intro --------------------------------------------------------------------------
@@ -639,7 +650,8 @@ a {
 }
 
 .intro-card__note--warning {
-  color: var(--color-warning);
+  color: var(--color-text);
+  font-weight: 700;
 }
 
 /* ---- Dialog (centred confirm or bottom sheet) -------------------------------------------- */
@@ -647,7 +659,7 @@ a {
 .dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -735,19 +747,23 @@ a {
   font-size: var(--font-size-2xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
 }
 
 .timer--normal {
   color: var(--color-timer-normal);
+  border-color: var(--color-timer-normal);
 }
 
 .timer--warning {
   color: var(--color-timer-warning);
+  border-color: var(--color-timer-warning);
 }
 
 .timer--critical {
   color: var(--color-timer-critical);
+  border-color: var(--color-timer-critical);
   animation: timer-pulse 1s ease-in-out infinite;
 }
 
@@ -768,7 +784,7 @@ a {
 
 .question-nav__item {
   aspect-ratio: 1;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   background: transparent;
   color: var(--color-text);
   border-radius: var(--radius-sm);
@@ -809,14 +825,17 @@ a {
 }
 
 .answer-tile {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   inline-size: 100%;
   text-align: start;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
-  border: 2px solid transparent;
+  border: 2px solid var(--color-border);
   background: var(--tile-bg);
-  color: var(--color-text-on-light);
+  color: var(--color-text);
   cursor: pointer;
   font-size: var(--font-size-base);
 }
@@ -836,6 +855,26 @@ a {
   border-color: var(--tile-border-wrong);
 }
 
+/* State icons, not just colour, per the option tile - a wrong pick after review still needs
+   to read correctly without colour vision. Source order matters: an option that is both the
+   student's pick and the correct answer (selected + correct) should show the teal check, and
+   a wrong pick (selected + wrong) should show the danger cross - .answer-tile--wrong is
+   declared last so it wins that combination. */
+.answer-tile--selected::after,
+.answer-tile--correct::after {
+  content: '\2713';
+  flex: none;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.answer-tile--wrong::after {
+  content: '\2715';
+  flex: none;
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
 .answer-tile--disabled {
   opacity: 0.8;
   cursor: not-allowed;
@@ -843,15 +882,17 @@ a {
 
 .answer-tile__hint {
   display: none; /* shown from tablet up, alongside the keyboard hint - see responsive.css */
+  flex: none;
   inline-size: 1.5em;
   block-size: 1.5em;
   margin-inline-end: var(--space-3);
   border-radius: var(--radius-sm);
-  background: rgba(15, 23, 42, 0.1);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
   font-size: var(--font-size-xs);
   font-weight: 700;
   text-align: center;
-  line-height: 1.5em;
+  line-height: 1.4em;
 }
 
 .save-status {
@@ -914,7 +955,7 @@ a {
 
 .score-ring__track {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.15);
+  stroke: var(--color-border);
   stroke-width: 10;
 }
 
@@ -960,7 +1001,7 @@ a {
 }
 
 .result-breakdown__outcome--correct {
-  color: var(--color-success);
+  color: var(--color-primary);
 }
 
 .result-breakdown__outcome--wrong {
@@ -1062,7 +1103,7 @@ a {
 }
 
 .breakdown-row--correct .breakdown-row__value {
-  color: var(--color-success);
+  color: var(--color-primary);
 }
 
 .breakdown-row--wrong .breakdown-row__value {
@@ -1077,7 +1118,7 @@ a {
   display: flex;
   justify-content: space-between;
   padding-block-start: var(--space-3);
-  border-block-start: 1px solid var(--glass-border);
+  border-block-start: 1px solid var(--color-border);
   font-weight: 700;
 }
 
@@ -1126,7 +1167,7 @@ a {
 .results-table td {
   padding: var(--space-3) var(--space-4);
   text-align: start;
-  border-block-end: 1px solid var(--glass-border);
+  border-block-end: 1px solid var(--color-border);
 }
 
 .results-table th {
@@ -1224,10 +1265,10 @@ a {
 }
 
 /* ---- Dashboard shell (teacher & admin) ----------------------------------------------------
-   Mobile-first like the rest of the app, but the OTHER way round from the student shell: base
-   rules here collapse the sidebar into a top bar (there's no room for a real side column yet);
-   from tablet up (see responsive.css) it becomes a fixed-width vertical sidebar, per the design
-   brief calling for a desktop sidebar layout for staff screens. */
+   Mobile-first like the rest of the app. On phone, the sidebar is an off-canvas drawer
+   (opened via the menu button in the top bar) rather than visible chrome; from tablet up (see
+   responsive.css) it becomes a fixed-width vertical sidebar that's always visible, per the
+   design brief calling for a desktop sidebar layout for staff screens. */
 
 .dashboard-shell {
   min-block-size: 100%;
@@ -1236,14 +1277,38 @@ a {
 }
 
 .dashboard-shell__sidebar {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 10;
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 30;
+  inline-size: 240px;
+  max-inline-size: 80vw;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+}
+
+[dir='rtl'] .dashboard-shell__sidebar {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  transform: translateX(100%);
+}
+
+.dashboard-shell__sidebar--open {
+  transform: translateX(0);
+}
+
+.dashboard-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: none;
+  padding: 0;
+  background: var(--color-overlay);
+  cursor: pointer;
 }
 
 .dashboard-shell__brand {
@@ -1254,33 +1319,29 @@ a {
 
 .dashboard-shell__nav {
   display: flex;
-  flex: 1;
-  gap: var(--space-4);
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .dashboard-shell__nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
   color: var(--color-text-muted);
   text-decoration: none;
   font-weight: 600;
   white-space: nowrap;
 }
 
+.dashboard-shell__nav-icon {
+  flex: none;
+}
+
 .dashboard-shell__nav-link--active {
-  color: var(--color-text);
-}
-
-.dashboard-shell__footer {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin-inline-start: auto;
-}
-
-.dashboard-shell__user-name {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  white-space: nowrap;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .dashboard-shell__body {
@@ -1294,12 +1355,43 @@ a {
   min-block-size: var(--header-height);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding-inline: var(--space-4);
+}
+
+.dashboard-shell__header-start {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+
+.dashboard-shell__header-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.dashboard-shell__menu-button {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: var(--radius-full);
+  padding: var(--space-2);
+  cursor: pointer;
 }
 
 .dashboard-shell__title {
   margin: 0;
   font-size: var(--font-size-lg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dashboard-shell__content {
@@ -1375,7 +1467,7 @@ a {
 
 fieldset.field {
   margin: 0;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
@@ -1412,7 +1504,7 @@ fieldset.field {
 }
 
 .checklist__item--ok::before {
-  background: var(--color-success);
+  background: var(--color-primary);
 }
 
 .checklist__item--fail {
@@ -1440,7 +1532,7 @@ fieldset.field {
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
 
@@ -1494,7 +1586,7 @@ fieldset.field {
   padding: var(--space-3) var(--space-4);
   text-align: start;
   white-space: nowrap;
-  border-block-end: 1px solid var(--glass-border);
+  border-block-end: 1px solid var(--color-border);
 }
 
 .data-table th {
@@ -1511,10 +1603,63 @@ fieldset.field {
 }
 
 .data-table__row-link:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--color-bg-subtle);
 }
 
-/* ---- Correct-rate list (results view, overview average-by-class) --------------------------- */
+.data-table__link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.data-table__link:hover {
+  text-decoration: underline;
+}
+
+/* ---- Bar chart (admin overview: average score by class) ------------------------------------ */
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bar-chart__row {
+  display: grid;
+  grid-template-columns: minmax(72px, 140px) 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.bar-chart__label {
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-chart__track {
+  block-size: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  overflow: hidden;
+}
+
+.bar-chart__fill {
+  block-size: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+
+.bar-chart__value {
+  flex: none;
+  min-inline-size: 3.5em;
+  text-align: end;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+/* ---- Correct-rate list (results view: per-question correctness breakdown) ------------------ */
 
 .correct-rate-list {
   list-style: none;
@@ -1578,5 +1723,5 @@ fieldset.field {
 .import-report__rejected {
   margin: var(--space-2) 0 0;
   padding-inline-start: var(--space-5);
-  color: var(--color-warning);
+  color: var(--color-danger);
 }

@@ -108,7 +108,7 @@ export default function ResultsPage() {
                       </td>
                       <td>
                         <span
-                          className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
+                          className={`badge ${isAutoSubmitted ? 'badge--neutral' : 'badge--success'}`}
                         >
                           {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
                         </span>
@@ -147,7 +147,7 @@ export default function ResultsPage() {
                         </bdi>
                       </span>
                       <span
-                        className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
+                        className={`badge ${isAutoSubmitted ? 'badge--neutral' : 'badge--success'}`}
                       >
                         {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
                       </span>

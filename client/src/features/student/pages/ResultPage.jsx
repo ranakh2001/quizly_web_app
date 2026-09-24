@@ -70,7 +70,7 @@ export default function ResultPage() {
           {quiz.teacherName && <p className="result-header__teacher">{quiz.teacherName}</p>}
         </div>
         <div className="result-header__meta">
-          <span className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}>
+          <span className={`badge ${isAutoSubmitted ? 'badge--neutral' : 'badge--success'}`}>
             {t(`attemptStatus.${isAutoSubmitted ? 'autoSubmitted' : 'submitted'}`)}
           </span>
           <span className="result-header__date">

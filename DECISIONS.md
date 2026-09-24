@@ -8,6 +8,16 @@ items.
 
 ## Assumptions
 
+- **The visual palette was simplified from the original Figma design to a minimal white /
+  black / teal system** (one accent colour, plus red reserved strictly for errors, destructive
+  actions, and the timer's last minute), replacing an earlier purple/indigo gradient background
+  with coloured blobs and amber/violet/emerald accents. Fewer competing colours makes the state
+  that actually matters (selected/correct/wrong, negative-marking risk, time running out) easier
+  to spot at a glance, and a single accent plus a red-for-danger convention is a more reliable
+  baseline for WCAG AA contrast than five-plus accent hues each needing their own check. All
+  colour values live as variables in `client/src/styles/tokens.css`; nothing else in the client
+  hard-codes a colour.
+
 - **Demo passwords are shared, not per-user.** Every seeded student shares `student123`, every
   teacher `teacher123`, the admin is `admin123`. A real deployment would issue unique passwords
   (or a first-login "set your password" flow); for a reviewable demo, memorable shared

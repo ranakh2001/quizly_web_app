@@ -5,8 +5,8 @@ import { formatCountdown } from '../../../lib/time.js';
 const ONE_MINUTE_MS = 60 * 1000;
 const FIVE_MINUTES_MS = 5 * ONE_MINUTE_MS;
 
-// Rule: teal > 5 min, amber <= 5 min, rose <= 1 min, with aria-live announcements at those
-// thresholds (not every second - that would spam a screen reader).
+// Rule: teal > 5 min, bold dark text <= 5 min, danger <= 1 min, with aria-live announcements
+// at those thresholds (not every second - that would spam a screen reader).
 export function Timer({ remainingMs }) {
   const { t } = useT();
   const level =

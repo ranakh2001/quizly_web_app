@@ -31,6 +31,13 @@ the filenames alone to know which one has what.
 - No magic numbers or strings: business constants go in `server/src/constants.js`, design
   values in `client/src/styles/tokens.css`, user-facing text in `client/src/i18n/{ar,en}.js`.
 - User-facing text only through i18n. Never hard-code strings in components.
+- The palette is minimal by design: white/near-black text + one teal accent (`--color-primary`)
+  + red only for danger (errors, destructive actions, wrong answers, the timer's last minute).
+  No other accent colours (no amber/violet/emerald, no gradients, no glassmorphism blur) - every
+  colour value lives in `tokens.css` as a variable; components reference `var(--...)` only. The
+  `.glass`/`.glass--bar`/`.glass--sheet` class names (`styles/glass.css`) are now flat card
+  surfaces (border + soft shadow, no blur) - the historical name stuck to avoid renaming call
+  sites across every feature screen.
 
 ## Errors
 
