@@ -107,8 +107,12 @@ export default function ResultsPage() {
                         <bdi>{percent}%</bdi>
                       </td>
                       <td>
-                        <span className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}>
-                          {t(`student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`)}
+                        <span
+                          className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
+                        >
+                          {t(
+                            `student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`,
+                          )}
                         </span>
                       </td>
                       <td>
@@ -135,7 +139,8 @@ export default function ResultsPage() {
                   <div className="glass result-row-card">
                     <h2 className="result-row-card__title">{attempt.quizTitle}</h2>
                     <p className="result-row-card__meta">
-                      {attempt.teacherName} · <bdi>{formatDateTime(attempt.submittedAt, language)}</bdi>
+                      {attempt.teacherName} ·{' '}
+                      <bdi>{formatDateTime(attempt.submittedAt, language)}</bdi>
                     </p>
                     <div className="result-row-card__footer">
                       <span className="result-row-card__score">
@@ -143,7 +148,9 @@ export default function ResultsPage() {
                           {attempt.score} / {attempt.maxScore} ({percent}%)
                         </bdi>
                       </span>
-                      <span className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}>
+                      <span
+                        className={`badge ${isAutoSubmitted ? 'badge--warning' : 'badge--success'}`}
+                      >
                         {t(`student.home.status${isAutoSubmitted ? 'AutoSubmitted' : 'Submitted'}`)}
                       </span>
                     </div>

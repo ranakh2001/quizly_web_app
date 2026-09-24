@@ -61,6 +61,32 @@ function validQuestionPayload(overrides = {}) {
   };
 }
 
+describe('GET /api/quizzes/classes', () => {
+  it('lists every class for the quiz editor', async () => {
+    const { app, db } = createTestApp();
+    const { classA, classB, teacher } = setUp(db);
+    const agent = await teacherAgent(app, teacher);
+
+    const response = await agent.get('/api/quizzes/classes');
+
+    expect(response.status).toBe(200);
+    expect(response.body.classes.map((c) => c.id).sort()).toEqual([classA, classB].sort());
+  });
+
+  it('rejects a student', async () => {
+    const { app, db } = createTestApp();
+    const { student } = setUp(db);
+    const agent = await loginAgent(app, {
+      studentCode: student.studentCode,
+      password: student.password,
+    });
+
+    const response = await agent.get('/api/quizzes/classes');
+
+    expect(response.status).toBe(403);
+  });
+});
+
 describe('POST /api/quizzes', () => {
   it('creates a draft quiz owned by the calling teacher', async () => {
     const { app, db } = createTestApp();

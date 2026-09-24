@@ -32,6 +32,11 @@ router.post('/', requireRole('teacher'), validate(createQuizSchema), (req, res) 
   res.status(201).json({ quiz });
 });
 
+// Registered before /:quizId so the literal path always wins the match.
+router.get('/classes', requireRole('teacher', 'admin'), (req, res) => {
+  res.json({ classes: quizzesService.listClasses(req.db) });
+});
+
 router.get('/:quizId', validate(quizIdParamsSchema, 'params'), (req, res) => {
   if (req.user.role === 'student') {
     res.json({ quiz: quizzesService.getQuizDetailForStudent(req.db, req.user, req.params.quizId) });

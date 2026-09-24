@@ -97,9 +97,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {status === 'error' && (
-        <ErrorState message={t(errorKey)} onRetry={load} />
-      )}
+      {status === 'error' && <ErrorState message={t(errorKey)} onRetry={load} />}
 
       {status === 'ready' && visibleQuizzes.length === 0 && (
         <EmptyState message={t(`student.home.empty${tab[0].toUpperCase()}${tab.slice(1)}`)} />
@@ -113,7 +111,9 @@ export default function HomePage() {
                 <div className="quiz-card__header">
                   <h2 className="quiz-card__title">{quiz.title}</h2>
                   {tab === 'upcoming' && (
-                    <span className="badge badge--neutral">{t('student.home.notOpenYetBadge')}</span>
+                    <span className="badge badge--neutral">
+                      {t('student.home.notOpenYetBadge')}
+                    </span>
                   )}
                   {tab !== 'upcoming' && quiz.negativeMarking && (
                     <span className="badge badge--warning">

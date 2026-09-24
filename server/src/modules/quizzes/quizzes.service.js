@@ -94,6 +94,10 @@ export function listForAdmin(db) {
   }));
 }
 
+export function listClasses(db) {
+  return quizzesRepository.listAllClasses(db);
+}
+
 export function createQuiz(db, teacher, input) {
   const classIds = input.classIds ?? [];
   assertClassesExist(db, classIds);

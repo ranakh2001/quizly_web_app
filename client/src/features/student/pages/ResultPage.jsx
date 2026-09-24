@@ -108,9 +108,13 @@ export default function ResultPage() {
               <h2 className="breakdown-card__title">{t('student.result.breakdown.title')}</h2>
               <ul className="breakdown-list">
                 <li className="breakdown-row breakdown-row--correct">
-                  <span>{t('student.result.breakdown.correctCount', { count: breakdown.correctCount })}</span>
+                  <span>
+                    {t('student.result.breakdown.correctCount', { count: breakdown.correctCount })}
+                  </span>
                   <bdi className="breakdown-row__value">
-                    {t('student.result.breakdown.correctPoints', { points: breakdown.correctPoints })}
+                    {t('student.result.breakdown.correctPoints', {
+                      points: breakdown.correctPoints,
+                    })}
                   </bdi>
                 </li>
                 <li className="breakdown-row breakdown-row--wrong">
